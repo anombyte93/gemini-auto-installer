@@ -180,12 +180,33 @@ fi  # End of SKIP_KEY_SETUP check
 echo ""
 echo "[4/5] Creating Open Codex configuration..."
 mkdir -p ~/.codex
-cat > ~/.codex/config.json <<EOF
+
+# Check if config already exists
+if [ -f ~/.codex/config.json ]; then
+    echo "✅ Configuration file already exists"
+    cat ~/.codex/config.json
+    echo ""
+    read -p "Replace with new configuration? (y/n): " replace_config
+    if [[ ! "$replace_config" =~ ^[Yy]$ ]]; then
+        echo "Keeping existing configuration."
+    else
+        create_config=true
+    fi
+else
+    create_config=true
+fi
+
+if [ "$create_config" = true ]; then
+    cat > ~/.codex/config.json <<EOF
 {
   "provider": "gemini",
-  "model": "gemini-2.5-pro-preview-03-25"
+  "model": "gemini-2.0-flash-exp"
 }
 EOF
+    echo "✅ Configuration created:"
+    echo "   Provider: gemini"
+    echo "   Model: gemini-2.0-flash-exp"
+fi
 
 echo ""
 echo "[5/6] Testing installation..."
