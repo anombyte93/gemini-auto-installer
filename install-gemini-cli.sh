@@ -251,3 +251,30 @@ else
     echo "   2. Test it: open-codex \"Hello, are you working?\""
 fi
 echo ""
+
+# Optional: Instructor SSH access setup
+echo "═══════════════════════════════════════════════════════"
+echo ""
+echo "🎓 For Instructors: Enable Remote SSH Access?"
+echo ""
+echo "This allows instructors to SSH into this machine for troubleshooting."
+echo "See INSTRUCTOR-GUIDE.md for details."
+echo ""
+read -p "Setup instructor SSH access now? (y/n): " setup_instructor_access
+
+if [[ "$setup_instructor_access" =~ ^[Yy]$ ]]; then
+    if [[ -f "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/setup-instructor-access.sh" ]]; then
+        echo ""
+        echo "Launching instructor access setup..."
+        echo ""
+        bash "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/setup-instructor-access.sh"
+    else
+        echo "⚠️  setup-instructor-access.sh not found."
+        echo "   You can run it manually later if needed."
+    fi
+else
+    echo ""
+    echo "Skipped. You can run './setup-instructor-access.sh' anytime."
+fi
+
+echo ""

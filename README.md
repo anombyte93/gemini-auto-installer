@@ -97,6 +97,8 @@ The script will:
   - **Linux/WSL:** ~/.bashrc
   - **macOS:** ~/.zshrc or ~/.bash_profile
 - Create Open Codex configuration at `~/.codex/config.json`
+- **Optionally install Student Mode** (recommended for beginners)
+- **Optionally setup instructor SSH access** (if in a course)
 - Test the installation
 
 ### Step 4: Activate the Installation
@@ -351,8 +353,10 @@ open-codex "How do I verify that Suricata is running, capturing traffic, and tha
 ## 📚 What's in This Repository?
 
 - **`install-gemini-cli.sh`** - The main installation script
-- **`STUDENT-INSTRUCTIONS.md`** - Detailed instructions (this guide)
-- **`README.md`** - Overview and documentation
+- **`student-codex`** - Student Mode wrapper (beginner-friendly)
+- **`setup-instructor-access.sh`** - Instructor SSH access setup
+- **`INSTRUCTOR-GUIDE.md`** - Complete guide for instructors
+- **`README.md`** - This documentation
 - **`PUSH-TO-GITHUB.sh`** - Helper script for publishing (ignore this)
 
 ---
@@ -566,10 +570,50 @@ This tool is designed for cybersecurity and IT courses where students need to:
 - Practice infrastructure-as-code concepts
 
 Students learn by:
-1. Describing requirements in natural language
-2. Reviewing AI-generated commands
-3. Understanding what each command does
-4. Troubleshooting with AI assistance
+1. Checking official documentation FIRST (mandatory in Student Mode)
+2. Describing requirements in natural language
+3. Reviewing AI-generated commands
+4. Understanding what each command does
+5. Troubleshooting with AI assistance
+
+### 🔧 Instructor Features
+
+**Remote SSH Access for Troubleshooting:**
+
+As an instructor, you can easily SSH into student machines to help with issues:
+
+1. **Generate your SSH key** (one time):
+   ```bash
+   ssh-keygen -t ed25519 -C "instructor@yourdomain.com"
+   cat ~/.ssh/id_ed25519.pub  # Share this with students
+   ```
+
+2. **Students run setup** (during installation or anytime):
+   ```bash
+   ./setup-instructor-access.sh
+   # Paste instructor's public key when prompted
+   ```
+
+3. **Connect to student machines:**
+   ```bash
+   ssh student-username@student-ip
+   ```
+
+**Complete instructor guide:** See `INSTRUCTOR-GUIDE.md` for:
+- Detailed setup instructions
+- Network scenario guides (same network, remote, cloud VMs)
+- Security best practices
+- Troubleshooting common issues
+- Batch setup for entire classes
+- SSH config for easy multi-student access
+
+**Benefits:**
+- ✅ Quick troubleshooting without being physically present
+- ✅ Help remote students effectively
+- ✅ Review lab work in real-time
+- ✅ Secure key-based authentication
+- ✅ Audit logging of access
+- ✅ Easy to remove after course ends
 
 ---
 
