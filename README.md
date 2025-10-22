@@ -4,6 +4,8 @@
 
 Use Google Gemini AI to automatically install Suricata, Wazuh, Docker, and other tools by just describing what you need.
 
+**✅ Supports:** Linux (Ubuntu/Debian/RHEL/Fedora), macOS, WSL
+
 ---
 
 ## 📖 For Students: What is This?
@@ -24,16 +26,25 @@ This tool installs **Google Gemini CLI** on your Linux system, which acts as you
 
 Download this repository to your system:
 
+**For Linux/macOS:**
 ```bash
-# Option A: Download as ZIP (if no git)
-# Go to: https://github.com/anombyte93/gemini-auto-installer
-# Click "Code" → "Download ZIP"
-# Extract and open terminal in that folder
-
-# Option B: Clone with git
+# Clone with git
 git clone https://github.com/anombyte93/gemini-auto-installer.git
 cd gemini-auto-installer
 ```
+
+**For Windows users:**
+```bash
+# Use WSL (Windows Subsystem for Linux)
+# Open Ubuntu/Debian WSL terminal and run:
+git clone https://github.com/anombyte93/gemini-auto-installer.git
+cd gemini-auto-installer
+```
+
+**No git installed?**
+- Go to: https://github.com/anombyte93/gemini-auto-installer
+- Click "Code" → "Download ZIP"
+- Extract and open terminal in that folder
 
 ### Step 2: Get Your FREE Google Gemini API Key
 
@@ -55,18 +66,31 @@ chmod +x install-gemini-cli.sh
 ```
 
 The script will:
-- Install Node.js (required for Gemini CLI)
+- **Detect your operating system** (Linux/macOS)
+- Install Node.js automatically:
+  - **Linux:** via apt (Ubuntu/Debian) or yum (RHEL/Fedora)
+  - **macOS:** via Homebrew (installs Homebrew first if needed)
 - Install Google Gemini CLI globally
 - **Prompt you for your API key** - paste it when asked
-- Save your API key securely to ~/.bashrc
+- Save your API key securely:
+  - **Linux/WSL:** ~/.bashrc
+  - **macOS:** ~/.zshrc or ~/.bash_profile
 - Test the installation
 
 ### Step 4: Activate the Installation
 
 Reload your terminal configuration:
 
+**Linux/WSL:**
 ```bash
 source ~/.bashrc
+```
+
+**macOS:**
+```bash
+source ~/.zshrc
+# OR if using bash:
+source ~/.bash_profile
 ```
 
 Or simply close and reopen your terminal.
@@ -247,7 +271,17 @@ chmod +x install-gemini-cli.sh
 
 ### Problem: "sudo: command not found" or password required
 
-**Solution:** Run the script on a system where you have sudo privileges. The script needs to install Node.js system-wide.
+**Solution:**
+- **Linux:** Run the script on a system where you have sudo privileges. The script needs to install Node.js system-wide.
+- **macOS:** You'll be prompted for your password when Homebrew needs admin access.
+
+### Problem: "brew: command not found" (macOS only)
+
+**Solution:** The script will install Homebrew automatically. Just follow the prompts and enter your password when asked.
+
+### Problem: Installation hangs on macOS
+
+**Solution:** Press Enter if the Homebrew installation is waiting for confirmation. The script may pause for user input during Homebrew installation.
 
 ---
 
