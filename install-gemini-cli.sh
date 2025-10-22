@@ -7,6 +7,10 @@
 
 set -e
 
+# Colors for better readability
+BOLD='\033[1m'
+NC='\033[0m' # No Color
+
 echo "=== Open Codex CLI with Google Gemini Auto-Installer ==="
 echo ""
 
@@ -147,8 +151,60 @@ cat > ~/.codex/config.json <<EOF
 EOF
 
 echo ""
-echo "[5/5] Testing installation..."
+echo "[5/6] Testing installation..."
 open-codex --version 2>/dev/null || echo "✅ Open Codex CLI installed"
+
+echo ""
+echo "[6/6] Setting up Student Mode (optional)..."
+echo ""
+echo "Student Mode provides:"
+echo "  • Guided prompts with educational explanations"
+echo "  • Pre-built templates for common tasks"
+echo "  • Step-by-step learning tutorials"
+echo "  • Safety tips and best practices"
+echo ""
+read -p "Install Student Mode for beginner-friendly experience? (y/n): " install_student
+
+if [[ "$install_student" =~ ^[Yy]$ ]]; then
+    # Determine installation directory
+    if [[ -d "$HOME/.local/bin" ]]; then
+        INSTALL_DIR="$HOME/.local/bin"
+    elif [[ -d "$HOME/bin" ]]; then
+        INSTALL_DIR="$HOME/bin"
+    else
+        mkdir -p "$HOME/.local/bin"
+        INSTALL_DIR="$HOME/.local/bin"
+    fi
+
+    # Get script directory
+    SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+    # Copy and setup student-codex
+    if [[ -f "$SCRIPT_DIR/student-codex" ]]; then
+        cp "$SCRIPT_DIR/student-codex" "$INSTALL_DIR/student-codex"
+        chmod +x "$INSTALL_DIR/student-codex"
+
+        # Add to PATH if not already there
+        if [[ "$INSTALL_DIR" == "$HOME/.local/bin" ]]; then
+            if ! grep -q ".local/bin" "$SHELL_CONFIG"; then
+                echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$SHELL_CONFIG"
+            fi
+        elif [[ "$INSTALL_DIR" == "$HOME/bin" ]]; then
+            if ! grep -q "HOME/bin" "$SHELL_CONFIG"; then
+                echo 'export PATH="$HOME/bin:$PATH"' >> "$SHELL_CONFIG"
+            fi
+        fi
+
+        echo "✅ Student Mode installed to $INSTALL_DIR/student-codex"
+        STUDENT_MODE_INSTALLED=true
+    else
+        echo "⚠️  student-codex script not found. Skipping."
+        STUDENT_MODE_INSTALLED=false
+    fi
+else
+    echo "Skipping Student Mode installation."
+    STUDENT_MODE_INSTALLED=false
+fi
 
 echo ""
 echo "✅ Installation complete!"
@@ -161,21 +217,37 @@ echo "🔒 Keep your API key private - don't share it or commit it to git"
 echo ""
 echo "🚀 How to use Open Codex:"
 echo ""
-echo "   Interactive mode:"
-echo "     open-codex"
-echo ""
-echo "   Direct prompting:"
-echo "     open-codex \"Explain Python closures\""
-echo "     open-codex \"Write a bash script to backup my home directory\""
-echo ""
-echo "   With specific provider:"
-echo "     open-codex --provider gemini \"Install Suricata IDS\""
-echo ""
+if [[ "$STUDENT_MODE_INSTALLED" == true ]]; then
+    echo -e "   ${BOLD}For Students (Recommended):${NC}"
+    echo "     student-codex"
+    echo "     ↳ Guided prompts, tutorials, safety tips"
+    echo ""
+    echo -e "   ${BOLD}Advanced Mode:${NC}"
+    echo "     open-codex"
+    echo "     ↳ Direct AI access (requires good prompting skills)"
+    echo ""
+else
+    echo "   Interactive mode:"
+    echo "     open-codex"
+    echo ""
+    echo "   Direct prompting:"
+    echo "     open-codex \"Explain Python closures\""
+    echo "     open-codex \"Write a bash script to backup my home directory\""
+    echo ""
+    echo "   With specific provider:"
+    echo "     open-codex --provider gemini \"Install Suricata IDS\""
+    echo ""
+fi
 echo "⚙️  Next steps:"
 if [[ "$OS" == "macos" ]]; then
     echo "   1. Restart your terminal or run: source ~/.zshrc"
 else
     echo "   1. Restart your terminal or run: source ~/.bashrc"
 fi
-echo "   2. Test it: open-codex \"Hello, are you working?\""
+if [[ "$STUDENT_MODE_INSTALLED" == true ]]; then
+    echo "   2. Run: student-codex"
+    echo "   3. Start with the Tutorial (option 1)"
+else
+    echo "   2. Test it: open-codex \"Hello, are you working?\""
+fi
 echo ""
