@@ -17,26 +17,34 @@ This tool installs **Open Codex CLI** with **Google Gemini** on your system, whi
 
 **Perfect for students who don't understand AI or feel lost using command-line tools!**
 
-Student Mode provides:
-- **📖 Documentation-First Approach** - MANDATORY checks for official docs before using AI
-- **📚 Interactive Tutorials** - Learn how to use AI assistants step-by-step
-- **🎯 Guided Prompts** - Pre-built templates that teach good prompting
-- **💡 Educational Explanations** - Understand WHAT you're doing and WHY
-- **🔒 Safety Warnings** - Learn which commands are safe and which need caution
-- **🛠️ Common Tasks Menu** - Quick access to frequent operations with explanations
-- **✅ Verification Prompts** - Ensures you check official docs before proceeding
-- **📖 Plain Language** - No confusing jargon, everything explained simply
+Student Mode is a simple wrapper that launches Open Codex with built-in learning instructions.
 
-**Example with Student Mode:**
-- You: Run `student-codex` and select "Install Software"
-- System: **"Have you checked the official documentation? (y/n)"** ← MANDATORY CHECK
-- You: Check docs first, then confirm
-- System: Asks you step-by-step questions (What? Which OS? Any special needs?)
-- System: Shows you the AI prompt it will create and explains WHY it's good
-- System: Warns you what to look out for in the AI response
-- AI: Gives you commands with explanations
-- You: Verify against docs, learn and understand before executing
-- Done (and you learned something safely!)
+**What it does:**
+- **📚 Auto-includes student learning context** - AI knows you're learning and explains accordingly
+- **💡 Simple language** - AI uses beginner-friendly explanations automatically
+- **🔒 Safety reminders** - AI warns about dangerous commands (sudo, rm, etc.)
+- **📖 Documentation prompts** - AI reminds you to check official docs first
+- **✅ Verification steps** - AI includes steps to confirm things worked
+- **🎓 Explains WHY** - Not just commands, but understanding
+
+**How it works:**
+```bash
+student-codex
+```
+
+This automatically launches Open Codex with this context:
+- "I am a student learning system administration"
+- "Explain concepts in simple terms"
+- "Warn me about dangerous commands"
+- "Remind me to check documentation first"
+- "Provide step-by-step explanations"
+
+**Want to bypass student mode?**
+```bash
+open-codex
+```
+
+This gives you direct access without the student learning prompts.
 
 ---
 
@@ -138,105 +146,65 @@ If you get a response from Gemini, you're ready to go!
 
 ## 🎓 Using Student Mode
 
-### First Time? Start Here!
+**Simple:** Just run `student-codex` instead of `open-codex`
 
-1. **Launch Student Mode:**
-   ```bash
-   student-codex
-   ```
-
-2. **Complete the Tutorial (Highly Recommended):**
-   - Select option `1` from the menu
-   - Learn how to write good prompts
-   - Understand how to evaluate AI responses
-   - **Learn the mandatory documentation-first rule**
-   - Practice safe learning habits
-
-3. **Try a Guided Task:**
-   - Select option `2` for guided software installation
-   - The system will check if you've read the docs FIRST
-   - It will help you build a good AI prompt step-by-step
-   - You'll learn WHY each part of the prompt matters
-
-### Student Mode Features
-
-#### 📖 Tutorial Mode (Option 1)
-Interactive lessons covering:
-- What is Open Codex and how does it work?
-- How to write effective prompts
-- **Why you MUST check documentation first** ⚠️
-- How to evaluate AI responses safely
-- Safe learning practices
-
-#### 🔧 Guided Install (Option 2)
-**Documentation check required!**
-- Ensures you've read official docs first
-- Asks step-by-step questions
-- Builds optimal prompts with explanations
-- Shows safety warnings
-- Teaches you good prompting habits
-
-#### ⚙️ Guided Configure (Option 3)
-**Documentation check required!**
-- Ensures you understand configuration options
-- Guides you through building configuration prompts
-- Explains config file safety (backups, syntax, etc.)
-- Helps you verify changes worked
-
-#### 🐛 Guided Troubleshooting (Option 4)
-Step-by-step error resolution:
-- Helps you describe the problem clearly
-- Teaches you how to read error messages
-- Shows you how to ask AI for help
-- Emphasizes understanding the root cause
-
-#### 📝 Custom Prompt Builder (Option 5)
-Interactive prompt enhancement:
-- Helps you build better prompts
-- Adds explanations, safety checks, verification steps
-- Teaches you what makes a good prompt
-- Shows before/after comparison
-
-#### 🎯 Quick Tasks (Option 6)
-Common operations with explanations:
-- Check service status
-- View logs
-- Monitor resources
-- Update packages
-- Each with educational context
-
-### Documentation-First Rule ⚠️
-
-Student Mode **enforces** checking official documentation before using AI:
-
-**Why This Matters:**
-- Official docs are the source of truth
-- AI can make mistakes or provide outdated info
-- You learn the recommended/official way first
-- You can verify AI suggestions against docs
-- You understand the context better
-
-**How It Works:**
-1. Choose a task (Install, Configure, etc.)
-2. System asks: "Have you checked the official documentation?"
-3. If NO → System explains why docs are important and sends you back
-4. If YES → System helps you build an AI prompt to complement the docs
-
-**Example:**
+```bash
+student-codex
 ```
-You: Select "Install Software" → Choose "Docker"
-System: "Have you checked Docker's official installation docs? (y/n)"
-You: n
-System: "Please check https://docs.docker.com/engine/install/ first!
-        This ensures you understand Docker's requirements and
-        recommended installation method. Come back after reading!"
-        [Returns to menu]
 
-You: [Reads docs, comes back]
-You: Select "Install Software" → Choose "Docker"
-System: "Have you checked Docker's official installation docs? (y/n)"
-You: y
-System: "Great! Now let's use AI to help with the installation..."
+This launches Open Codex with built-in student learning instructions that tell the AI:
+- You're a student learning system administration
+- Use simple, clear language
+- Explain WHY, not just WHAT
+- Warn about dangerous commands
+- Remind to check official documentation
+- Provide verification steps
+
+**Example Session:**
+```bash
+$ student-codex
+
+Student Codex - AI Learning Assistant
+
+📚 Student Mode Active
+
+This launches Open Codex with special student learning instructions
+that help the AI provide better educational responses.
+
+What this does:
+  • Tells AI you're a student learning system administration
+  • Asks AI to explain concepts in simple terms
+  • Requests step-by-step explanations
+  • Gets warnings about dangerous commands
+  • Ensures you understand WHY, not just WHAT
+
+───────────────────────────────────────────────────────
+
+💡 To bypass this and use Open Codex directly:
+
+  Run:  open-codex
+
+  This gives you full control without student prompts.
+
+───────────────────────────────────────────────────────
+
+✓ Launching Open Codex with student learning context...
+
+[Open Codex starts with student context pre-loaded]
+```
+
+### Benefits
+
+**For students who feel lost:**
+- ✅ AI automatically knows you're learning
+- ✅ Explanations are simpler and more detailed
+- ✅ Safety warnings included by default
+- ✅ Documentation reminders built-in
+- ✅ No complex menus to navigate
+
+**Advanced users can bypass:**
+```bash
+open-codex  # Direct access without student prompts
 ```
 
 ---
