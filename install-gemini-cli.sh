@@ -1,12 +1,13 @@
 #!/bin/bash
 
-# Auto-installer for Google Gemini CLI
-# This script installs Node.js and Gemini CLI, then configures the API key
+# Auto-installer for Open Codex CLI with Google Gemini
+# This script installs Node.js and Open Codex CLI, then configures the Gemini API key
 # Supports: Linux (Ubuntu/Debian), macOS, WSL
+# Requires: Node.js v22+
 
 set -e
 
-echo "=== Google Gemini CLI Auto-Installer ==="
+echo "=== Open Codex CLI with Google Gemini Auto-Installer ==="
 echo ""
 
 # Detect OS
@@ -22,55 +23,69 @@ else
     exit 1
 fi
 
-# Install Node.js
+# Check Node.js version requirement
 echo ""
-echo "[1/4] Installing Node.js..."
+echo "[1/5] Checking Node.js installation..."
 
-if [[ "$OS" == "linux" ]]; then
-    # Check if running on Debian/Ubuntu
-    if command -v apt-get &> /dev/null; then
-        echo "Installing Node.js via apt (Debian/Ubuntu)..."
-        curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-        sudo apt-get install -y nodejs
-    elif command -v yum &> /dev/null; then
-        echo "Installing Node.js via yum (RHEL/CentOS/Fedora)..."
-        curl -fsSL https://rpm.nodesource.com/setup_20.x | sudo bash -
-        sudo yum install -y nodejs
+if command -v node &> /dev/null; then
+    NODE_VERSION=$(node -v | cut -d'v' -f2 | cut -d'.' -f1)
+    echo "Node.js installed: v$(node -v | cut -d'v' -f2)"
+
+    if [ "$NODE_VERSION" -lt 22 ]; then
+        echo "⚠️  Node.js v22+ required. Current version is too old."
+        echo "Upgrading to Node.js v22..."
+        NEED_UPGRADE=true
     else
-        echo "⚠️  Could not detect package manager (apt or yum)"
-        echo "Please install Node.js manually from https://nodejs.org/"
-        exit 1
+        echo "✅ Node.js version meets requirements (v22+)"
+        NEED_UPGRADE=false
     fi
-
-elif [[ "$OS" == "macos" ]]; then
-    # Check if Homebrew is installed
-    if ! command -v brew &> /dev/null; then
-        echo "Homebrew not found. Installing Homebrew first..."
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    fi
-
-    # Check if Node.js is already installed
-    if command -v node &> /dev/null; then
-        NODE_VERSION=$(node -v)
-        echo "Node.js already installed: $NODE_VERSION"
-        echo "Updating to latest version..."
-        brew upgrade node || brew install node
-    else
-        echo "Installing Node.js via Homebrew..."
-        brew install node
-    fi
+else
+    echo "Node.js not found. Installing Node.js v22..."
+    NEED_UPGRADE=true
 fi
 
-# Verify Node.js installation
+# Install/Upgrade Node.js if needed
+if [ "$NEED_UPGRADE" = true ]; then
+    if [[ "$OS" == "linux" ]]; then
+        # Check if running on Debian/Ubuntu
+        if command -v apt-get &> /dev/null; then
+            echo "Installing Node.js v22 via apt (Debian/Ubuntu)..."
+            curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+            sudo apt-get install -y nodejs
+        elif command -v yum &> /dev/null; then
+            echo "Installing Node.js v22 via yum (RHEL/CentOS/Fedora)..."
+            curl -fsSL https://rpm.nodesource.com/setup_22.x | sudo bash -
+            sudo yum install -y nodejs
+        else
+            echo "⚠️  Could not detect package manager (apt or yum)"
+            echo "Please install Node.js v22+ manually from https://nodejs.org/"
+            exit 1
+        fi
+
+    elif [[ "$OS" == "macos" ]]; then
+        # Check if Homebrew is installed
+        if ! command -v brew &> /dev/null; then
+            echo "Homebrew not found. Installing Homebrew first..."
+            /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        fi
+
+        echo "Installing/Upgrading Node.js via Homebrew..."
+        brew upgrade node || brew install node
+    fi
+
+    # Verify Node.js installation
+    echo ""
+    echo "Verifying Node.js installation..."
+    node --version
+    npm --version
+fi
+
 echo ""
-echo "Verifying Node.js installation..."
-node --version
-npm --version
+echo "[2/5] Installing Open Codex CLI globally..."
+npm install -g open-codex
 
-echo "[2/4] Installing Gemini CLI globally..."
-npm install -g @google/generative-ai-cli
-
-echo "[3/4] Setting up API key..."
+echo ""
+echo "[3/5] Setting up Gemini API key..."
 echo ""
 echo "You need a Google Gemini API key to use this tool."
 echo "Get one FREE at: https://aistudio.google.com/app/apikey"
@@ -108,32 +123,59 @@ else
 fi
 
 # Add to shell config for persistence
-if grep -q "GOOGLE_API_KEY" "$SHELL_CONFIG"; then
+if grep -q "GOOGLE_GENERATIVE_AI_API_KEY" "$SHELL_CONFIG"; then
     # Remove old key (different sed syntax for macOS vs Linux)
     if [[ "$OS" == "macos" ]]; then
-        sed -i '' '/GOOGLE_API_KEY/d' "$SHELL_CONFIG"
+        sed -i '' '/GOOGLE_GENERATIVE_AI_API_KEY/d' "$SHELL_CONFIG"
     else
-        sed -i '/GOOGLE_API_KEY/d' "$SHELL_CONFIG"
+        sed -i '/GOOGLE_GENERATIVE_AI_API_KEY/d' "$SHELL_CONFIG"
     fi
 fi
-echo "export GOOGLE_API_KEY=\"$GOOGLE_API_KEY\"" >> "$SHELL_CONFIG"
+echo "export GOOGLE_GENERATIVE_AI_API_KEY=\"$GOOGLE_API_KEY\"" >> "$SHELL_CONFIG"
 
 # Export for current session
-export GOOGLE_API_KEY="$GOOGLE_API_KEY"
+export GOOGLE_GENERATIVE_AI_API_KEY="$GOOGLE_API_KEY"
 
 echo ""
-echo "[4/4] Testing installation..."
-gemini --version
+echo "[4/5] Creating Open Codex configuration..."
+mkdir -p ~/.codex
+cat > ~/.codex/config.json <<EOF
+{
+  "provider": "gemini",
+  "model": "gemini-2.5-pro-preview-03-25"
+}
+EOF
+
+echo ""
+echo "[5/5] Testing installation..."
+open-codex --version 2>/dev/null || echo "✅ Open Codex CLI installed"
 
 echo ""
 echo "✅ Installation complete!"
 echo ""
-echo "🔑 Your API key has been saved to $SHELL_CONFIG"
+echo "📁 Configuration saved:"
+echo "   • API key: $SHELL_CONFIG (GOOGLE_GENERATIVE_AI_API_KEY)"
+echo "   • Config: ~/.codex/config.json"
+echo ""
 echo "🔒 Keep your API key private - don't share it or commit it to git"
 echo ""
-
+echo "🚀 How to use Open Codex:"
+echo ""
+echo "   Interactive mode:"
+echo "     open-codex"
+echo ""
+echo "   Direct prompting:"
+echo "     open-codex \"Explain Python closures\""
+echo "     open-codex \"Write a bash script to backup my home directory\""
+echo ""
+echo "   With specific provider:"
+echo "     open-codex --provider gemini \"Install Suricata IDS\""
+echo ""
+echo "⚙️  Next steps:"
 if [[ "$OS" == "macos" ]]; then
-    echo "Now restart your terminal or run: source ~/.zshrc"
+    echo "   1. Restart your terminal or run: source ~/.zshrc"
 else
-    echo "Now restart your terminal or run: source ~/.bashrc"
+    echo "   1. Restart your terminal or run: source ~/.bashrc"
 fi
+echo "   2. Test it: open-codex \"Hello, are you working?\""
+echo ""

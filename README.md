@@ -1,16 +1,17 @@
-# Gemini Auto-Installer for Students
+# Open Codex Auto-Installer for Students
 
-**AI-powered auto-installer that installs and configures software through simple prompts.**
+**AI-powered code CLI that helps you install and configure software through simple prompts.**
 
-Use Google Gemini AI to automatically install Suricata, Wazuh, Docker, and other tools by just describing what you need.
+Use Open Codex with Google Gemini AI to automatically install Suricata, Wazuh, Docker, and other tools by just describing what you need.
 
 **✅ Supports:** Linux (Ubuntu/Debian/RHEL/Fedora), macOS, WSL
+**⚙️ Requires:** Node.js v22+
 
 ---
 
 ## 📖 For Students: What is This?
 
-This tool installs **Google Gemini CLI** on your Linux system, which acts as your AI installation assistant. Instead of following complex installation guides, you simply tell the AI what you want installed, and it generates the exact commands for you.
+This tool installs **Open Codex CLI** with **Google Gemini** on your system, which acts as your AI-powered coding assistant. Instead of following complex installation guides, you simply tell the AI what you want installed, and it generates the exact commands for you, with the ability to execute them interactively.
 
 **Example:**
 - You say: *"Install Suricata on my Ubuntu system with Wazuh integration"*
@@ -67,14 +68,16 @@ chmod +x install-gemini-cli.sh
 
 The script will:
 - **Detect your operating system** (Linux/macOS)
-- Install Node.js automatically:
+- **Check Node.js version** (requires v22+):
+  - If Node.js is not installed or too old, it will automatically install/upgrade to v22
   - **Linux:** via apt (Ubuntu/Debian) or yum (RHEL/Fedora)
   - **macOS:** via Homebrew (installs Homebrew first if needed)
-- Install Google Gemini CLI globally
-- **Prompt you for your API key** - paste it when asked
-- Save your API key securely:
+- Install **Open Codex CLI** globally
+- **Prompt you for your Gemini API key** - paste it when asked
+- Save your API key securely as `GOOGLE_GENERATIVE_AI_API_KEY`:
   - **Linux/WSL:** ~/.bashrc
   - **macOS:** ~/.zshrc or ~/.bash_profile
+- Create Open Codex configuration at `~/.codex/config.json`
 - Test the installation
 
 ### Step 4: Activate the Installation
@@ -100,21 +103,40 @@ Or simply close and reopen your terminal.
 Try this command:
 
 ```bash
-gemini "Hello, are you working?"
+open-codex "Hello, are you working?"
 ```
 
 If you get a response from Gemini, you're ready to go!
 
 ---
 
-## 🎯 How to Use Gemini CLI as Your Auto-Installer
+## 🎯 How to Use Open Codex as Your Auto-Installer
+
+### Usage Modes
+
+**Interactive Mode:**
+```bash
+open-codex
+```
+Starts an interactive session where you can have a conversation with the AI.
+
+**Direct Prompting:**
+```bash
+open-codex "Your prompt here"
+```
+Send a one-off prompt and get a response.
+
+**With Specific Provider:**
+```bash
+open-codex --provider gemini "Your prompt here"
+```
 
 ### Example 1: Install Suricata with Wazuh Integration
 
 This is the main use case for cybersecurity students:
 
 ```bash
-gemini "Install Suricata IDS on this Ubuntu system that has a Wazuh agent already installed. Configure Suricata to log network traffic to /var/log/suricata/ and integrate it with the Wazuh agent by configuring the ossec.conf file to monitor Suricata's eve.json logs. Enable all ET Open rulesets and configure network interface monitoring. Show me the exact commands to run."
+open-codex "Install Suricata IDS on this Ubuntu system that has a Wazuh agent already installed. Configure Suricata to log network traffic to /var/log/suricata/ and integrate it with the Wazuh agent by configuring the ossec.conf file to monitor Suricata's eve.json logs. Enable all ET Open rulesets and configure network interface monitoring. Show me the exact commands to run."
 ```
 
 **What happens:**
@@ -131,13 +153,13 @@ gemini "Install Suricata IDS on this Ubuntu system that has a Wazuh agent alread
 ### Example 2: Install Docker
 
 ```bash
-gemini "Install Docker on Ubuntu 22.04 and add my current user to the docker group so I can run docker without sudo. Show me the commands."
+open-codex "Install Docker on Ubuntu 22.04 and add my current user to the docker group so I can run docker without sudo. Show me the commands."
 ```
 
 ### Example 3: Configure Suricata Performance
 
 ```bash
-gemini "Configure Suricata to use 4 CPU threads and enable all protocol analyzers. Show me what to edit in suricata.yaml"
+open-codex "Configure Suricata to use 4 CPU threads and enable all protocol analyzers. Show me what to edit in suricata.yaml"
 ```
 
 ### Example 4: Troubleshoot Errors
@@ -145,7 +167,7 @@ gemini "Configure Suricata to use 4 CPU threads and enable all protocol analyzer
 If something goes wrong:
 
 ```bash
-gemini "I got this error when starting Suricata: [paste your error here]. How do I fix it?"
+open-codex "I got this error when starting Suricata: [paste your error here]. How do I fix it?"
 ```
 
 ---
@@ -171,28 +193,28 @@ gemini "I got this error when starting Suricata: [paste your error here]. How do
 
 **Prompt:**
 ```bash
-gemini "Install Suricata IDS on Ubuntu 22.04. Configure it to monitor eth0 interface. Enable EVE JSON logging to /var/log/suricata/eve.json. Download and enable Emerging Threats Open ruleset. Start the service and verify it's running. Give me the complete commands."
+open-codex "Install Suricata IDS on Ubuntu 22.04. Configure it to monitor eth0 interface. Enable EVE JSON logging to /var/log/suricata/eve.json. Download and enable Emerging Threats Open ruleset. Start the service and verify it's running. Give me the complete commands."
 ```
 
 ### Task 2: Integrating Suricata with Wazuh
 
 **Prompt:**
 ```bash
-gemini "I have Suricata installed and logging to /var/log/suricata/eve.json. I have Wazuh agent installed. Configure the Wazuh agent to read Suricata logs and send them to the Wazuh manager. Show me what to add to ossec.conf and how to restart the agent."
+open-codex "I have Suricata installed and logging to /var/log/suricata/eve.json. I have Wazuh agent installed. Configure the Wazuh agent to read Suricata logs and send them to the Wazuh manager. Show me what to add to ossec.conf and how to restart the agent."
 ```
 
 ### Task 3: Creating Custom Suricata Rules
 
 **Prompt:**
 ```bash
-gemini "Create a Suricata rule that detects SSH brute force attempts (more than 5 connections per minute from the same IP). Explain the rule syntax and tell me where to save it."
+open-codex "Create a Suricata rule that detects SSH brute force attempts (more than 5 connections per minute from the same IP). Explain the rule syntax and tell me where to save it."
 ```
 
 ### Task 4: Verifying Everything Works
 
 **Prompt:**
 ```bash
-gemini "How do I verify that Suricata is running, capturing traffic, and that Wazuh is receiving the alerts? Give me the commands to check logs and service status."
+open-codex "How do I verify that Suricata is running, capturing traffic, and that Wazuh is receiving the alerts? Give me the commands to check logs and service status."
 ```
 
 ---
@@ -240,7 +262,7 @@ gemini "How do I verify that Suricata is running, capturing traffic, and that Wa
 
 ## 🐛 Troubleshooting
 
-### Problem: "gemini: command not found"
+### Problem: "open-codex: command not found"
 
 **Solution:**
 ```bash
@@ -250,15 +272,22 @@ source ~/.bashrc
 
 ### Problem: "API key invalid" or "401 Unauthorized"
 
-**Solution:** The public API key was revoked. Get your own key from [Google AI Studio](https://aistudio.google.com/app/apikey) and update the script.
+**Solution:** Get your own key from [Google AI Studio](https://aistudio.google.com/app/apikey) and update your `~/.bashrc`:
+```bash
+nano ~/.bashrc
+# Find and update the line:
+export GOOGLE_GENERATIVE_AI_API_KEY="YOUR_NEW_KEY_HERE"
+# Save and reload:
+source ~/.bashrc
+```
 
-### Problem: "Node.js version too old"
+### Problem: "Node.js version too old" or "Requires Node.js v22+"
 
 **Solution:**
 ```bash
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 sudo apt-get install -y nodejs
-node --version  # Should be v20.x or higher
+node --version  # Should be v22.x or higher
 ```
 
 ### Problem: Script fails with "Permission denied"
@@ -303,7 +332,7 @@ By using this tool, you will learn:
 
 If you get stuck:
 
-1. **Ask Gemini for help:** `gemini "I'm stuck with [your problem]"`
+1. **Ask Open Codex for help:** `open-codex "I'm stuck with [your problem]"`
 2. **Check the logs:** Most errors are in `/var/log/`
 3. **Ask your instructor:** They can help debug specific issues
 
@@ -323,10 +352,11 @@ MIT License - Free for educational and commercial use.
 
 This repository provides:
 
-1. **Automated Gemini CLI Installation** - One-command setup for the Google Gemini CLI
-2. **Pre-configured API Key** - Ready to use (with security warnings)
-3. **Student Instructions** - Simple guide for using AI as an auto-installer
-4. **Example Prompts** - Tested prompts for common installation tasks
+1. **Automated Open Codex Installation** - One-command setup for Open Codex CLI with Google Gemini
+2. **Node.js v22+ Auto-Install** - Automatically installs or upgrades Node.js to meet requirements
+3. **API Key Configuration** - Prompts for and securely stores your Gemini API key
+4. **Student Instructions** - Simple guide for using AI as a coding assistant and auto-installer
+5. **Example Prompts** - Tested prompts for common installation and configuration tasks
 
 ---
 
@@ -335,25 +365,25 @@ This repository provides:
 ### Install Suricata with Wazuh Integration
 
 ```bash
-gemini "Install Suricata IDS on this Ubuntu system that has a Wazuh agent already installed. Configure Suricata to log network traffic to /var/log/suricata/ and integrate it with the Wazuh agent by configuring the ossec.conf file to monitor Suricata's eve.json logs. Enable all ET Open rulesets and configure network interface monitoring. Show me the exact commands to run."
+open-codex "Install Suricata IDS on this Ubuntu system that has a Wazuh agent already installed. Configure Suricata to log network traffic to /var/log/suricata/ and integrate it with the Wazuh agent by configuring the ossec.conf file to monitor Suricata's eve.json logs. Enable all ET Open rulesets and configure network interface monitoring. Show me the exact commands to run."
 ```
 
 ### Install Docker
 
 ```bash
-gemini "Install Docker on Ubuntu and add my user to the docker group. Show me the commands."
+open-codex "Install Docker on Ubuntu and add my user to the docker group. Show me the commands."
 ```
 
 ### Configure Services
 
 ```bash
-gemini "Configure Suricata to use 4 CPU threads and enable all protocol analyzers"
+open-codex "Configure Suricata to use 4 CPU threads and enable all protocol analyzers"
 ```
 
 ### Troubleshoot Issues
 
 ```bash
-gemini "Suricata service failed to start with error: [paste error]. Fix the configuration."
+open-codex "Suricata service failed to start with error: [paste error]. Fix the configuration."
 ```
 
 ---
@@ -388,11 +418,12 @@ gemini "Suricata service failed to start with error: [paste error]. Fix the conf
 
 ## 🛠️ How It Works
 
-1. **Install Script** installs Node.js and Gemini CLI
-2. **Configure** sets up the Google API key automatically
-3. **Prompt** the AI with natural language descriptions of what you want installed
-4. **Execute** the commands the AI generates
-5. **Iterate** if errors occur, paste them back to the AI for fixes
+1. **Install Script** checks/installs Node.js v22+ and Open Codex CLI
+2. **Configure** prompts for and saves your Gemini API key
+3. **Create Config** sets up `~/.codex/config.json` with Gemini as the provider
+4. **Prompt** the AI with natural language descriptions of what you want
+5. **Interactive Execution** Open Codex can execute commands with your approval
+6. **Iterate** if errors occur, paste them back to the AI for fixes
 
 ---
 
@@ -431,8 +462,10 @@ MIT License - Feel free to use in educational and commercial projects.
 
 ## 🔗 Links
 
-- [Google Gemini CLI Documentation](https://ai.google.dev/gemini-api/docs)
+- [Open Codex Documentation](https://github.com/google-gemini/open-codex)
+- [Google Gemini API Documentation](https://ai.google.dev/gemini-api/docs)
 - [Google AI Studio](https://aistudio.google.com/)
+- [Node.js Downloads](https://nodejs.org/)
 - [Suricata Documentation](https://suricata.io/docs/)
 - [Wazuh Documentation](https://documentation.wazuh.com/)
 
@@ -440,22 +473,25 @@ MIT License - Feel free to use in educational and commercial projects.
 
 ## ❓ Troubleshooting
 
-### "gemini: command not found"
+### "open-codex: command not found"
 
 ```bash
 source ~/.bashrc
 # OR
-npm install -g @google/generative-ai-cli
+npm install -g open-codex
 ```
 
 ### "API key invalid"
 
-The public API key may have been revoked. Get your own at [Google AI Studio](https://aistudio.google.com/app/apikey).
+Get your own at [Google AI Studio](https://aistudio.google.com/app/apikey) and update `~/.bashrc`:
+```bash
+export GOOGLE_GENERATIVE_AI_API_KEY="YOUR_KEY_HERE"
+```
 
-### "Node.js version too old"
+### "Node.js version too old" or "Requires v22+"
 
 ```bash
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
 
