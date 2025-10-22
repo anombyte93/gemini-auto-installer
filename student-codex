@@ -13,21 +13,22 @@ RED='\033[0;31m'
 BOLD='\033[1m'
 NC='\033[0m'
 
-# Base student context that applies to all AI interactions
-BASE_STUDENT_CONTEXT="STUDENT LEARNING MODE ACTIVE
+# Base student context that instructs the AI how to behave
+BASE_STUDENT_CONTEXT="You are helping a student who is learning system administration and cybersecurity.
 
-I am a student learning system administration and cybersecurity. Please help me by:
-- Explaining concepts in simple, clear language
-- Breaking down complex tasks into steps
-- Explaining WHAT each command does and WHY it's needed
-- Warning me about dangerous commands (sudo, rm, etc.)
-- Providing verification steps to confirm things worked
-- Reminding me to check official documentation when relevant
-- Teaching good security and admin practices
+INSTRUCTIONS FOR YOUR RESPONSES:
+- Use simple, clear language appropriate for beginners
+- Break down complex tasks into numbered steps
+- For each command you suggest, explain WHAT it does and WHY it's needed
+- Add clear warnings before any dangerous commands (sudo, rm, dd, etc.)
+- Include verification steps at the end so the student can confirm success
+- When relevant, remind the student to check official documentation
+- Teach good security and system administration practices
+- Be encouraging and patient - they are learning
 
 "
 
-# Check if open-codex is installed
+# Check if open-codex is installed and configured
 check_codex() {
     if ! command -v open-codex &> /dev/null; then
         echo -e "${RED}⚠️  Open Codex not found!${NC}"
@@ -37,6 +38,75 @@ check_codex() {
         echo ""
         exit 1
     fi
+
+    # Check if API key is configured
+    if [ -z "$GOOGLE_GENERATIVE_AI_API_KEY" ]; then
+        echo -e "${YELLOW}⚠️  Warning: API key not detected in environment${NC}"
+        echo ""
+        echo "You may need to set your API key:"
+        echo "  export GOOGLE_GENERATIVE_AI_API_KEY='your-key-here'"
+        echo ""
+        echo "Or restart your terminal to load the key from ~/.bashrc"
+        echo ""
+        read -p "Continue anyway? (y/n): " continue_anyway
+        if [[ ! "$continue_anyway" =~ ^[Yy]$ ]]; then
+            exit 1
+        fi
+    else
+        echo -e "${GREEN}✓ API key detected${NC}"
+    fi
+
+    # Quick test to see if open-codex works
+    echo -e "${CYAN}Testing Open Codex...${NC}"
+    if timeout 5 open-codex --version &>/dev/null; then
+        echo -e "${GREEN}✓ Open Codex is working${NC}"
+    else
+        echo -e "${YELLOW}⚠️  Open Codex may have issues${NC}"
+        echo ""
+        echo "Common problems:"
+        echo "  1. API key not set or invalid"
+        echo "  2. Network connection issues"
+        echo "  3. Open Codex not properly installed"
+        echo ""
+        echo "Try running directly: open-codex"
+        echo ""
+        read -p "Continue to menu? (y/n): " continue_menu
+        if [[ ! "$continue_menu" =~ ^[Yy]$ ]]; then
+            exit 1
+        fi
+    fi
+
+    echo ""
+}
+
+# Show how to use open-codex
+show_usage_instructions() {
+    echo -e "${CYAN}╔══════════════════════════════════════════════════════╗${NC}"
+    echo -e "${CYAN}║${NC}  ${BOLD}HOW TO USE THE AI ASSISTANT${NC}                      ${CYAN}║${NC}"
+    echo -e "${CYAN}╚══════════════════════════════════════════════════════╝${NC}"
+    echo ""
+    echo -e "${YELLOW}Open Codex will now start. Here's how to use it:${NC}"
+    echo ""
+    echo -e "${GREEN}1. Wait for the AI to respond${NC}"
+    echo "   (You'll see a prompt where you can type)"
+    echo ""
+    echo -e "${GREEN}2. Type your questions or requests${NC}"
+    echo "   The AI already knows you're a student learning"
+    echo ""
+    echo -e "${GREEN}3. To execute suggested commands:${NC}"
+    echo "   • AI will ask permission before running commands"
+    echo "   • Type 'y' to approve or 'n' to decline"
+    echo "   • READ commands before approving!"
+    echo ""
+    echo -e "${GREEN}4. To exit the AI session:${NC}"
+    echo "   • Type 'exit' or press Ctrl+C"
+    echo ""
+    echo -e "${YELLOW}⚠️  If it gets stuck:${NC}"
+    echo "   • Press Ctrl+C to stop"
+    echo "   • You'll return to the menu"
+    echo ""
+    echo -e "${CYAN}Press Enter when ready...${NC}"
+    read
 }
 
 # Launch open-codex with student context + specific prompt
@@ -44,13 +114,22 @@ launch_codex() {
     local prompt="$1"
     local full_prompt="${BASE_STUDENT_CONTEXT}${prompt}"
 
-    echo ""
-    echo -e "${GREEN}✓ Launching AI assistant...${NC}"
-    echo ""
-    sleep 0.5
+    clear
+    show_usage_instructions
 
-    open-codex "$full_prompt"
+    echo ""
+    echo -e "${GREEN}✓ Starting AI assistant...${NC}"
+    echo ""
 
+    # Add timeout handling and better error recovery
+    if ! timeout 300 open-codex "$full_prompt" 2>/dev/null; then
+        echo ""
+        echo -e "${YELLOW}⚠️  Session ended or timed out${NC}"
+        echo ""
+    fi
+
+    echo ""
+    echo -e "${GREEN}✓ AI session complete${NC}"
     echo ""
     echo -e "${CYAN}Press Enter to return to menu...${NC}"
     read
@@ -143,11 +222,13 @@ general_help() {
     read -p "> " user_input
 
     if [ -z "$user_input" ]; then
-        prompt="I need help with system administration. Please start by asking me what I'm working on or what I need help with."
-    else
-        prompt="I need help with: ${user_input}
+        prompt="TASK: The student needs general help with system administration.
 
-Please provide a clear explanation and practical guidance."
+Start by greeting them and asking what they're working on or what they need help with today."
+    else
+        prompt="QUESTION: ${user_input}
+
+Provide a clear, educational explanation with practical examples if relevant."
     fi
 
     launch_codex "$prompt"

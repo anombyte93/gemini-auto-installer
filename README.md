@@ -194,12 +194,22 @@ student-codex
 
 ### How It Works
 
-Each option automatically includes student learning context:
-- "I am a student learning system administration"
-- "Explain in simple terms"
-- "Warn about dangerous commands"
-- "Provide verification steps"
-- "Remind to check official documentation"
+Each option automatically instructs the AI to behave educationally:
+
+**AI is instructed to:**
+- Use simple, clear language for beginners
+- Break down complex tasks into numbered steps
+- Explain WHAT each command does and WHY it's needed
+- Warn before dangerous commands (sudo, rm, dd, etc.)
+- Include verification steps so students can confirm success
+- Remind students to check official documentation
+- Be encouraging and patient
+
+**Before launching, students see:**
+- Instructions on HOW to use Open Codex
+- How to approve/decline commands
+- How to exit if stuck (Ctrl+C)
+- Timeout protection (5 minutes max)
 
 **Example: Install Docker**
 ```
@@ -207,10 +217,12 @@ Choice: 2 (Install Software)
 Software: docker
 OS: Ubuntu 22.04
 
-→ Launches AI with:
-  "STUDENT MODE: Install docker on Ubuntu 22.04
-   Please explain what Docker is, provide commands with
-   explanations, warn about sudo, include verification..."
+→ Student sees usage instructions
+→ Presses Enter when ready
+→ AI launches with education instructions + task
+→ AI responds in beginner-friendly way
+→ Student can interact, approve commands, ask questions
+→ Returns to menu when done
 ```
 
 ### Benefits
