@@ -14,6 +14,89 @@ This guide helps instructors set up SSH access to student machines for remote tr
 - ✅ Audit logging of instructor access
 - ✅ Easy to remove when course ends
 - ✅ Works across different networks
+- ✅ **NEW:** Web dashboard to view all students at a glance
+
+---
+
+## 🆕 Instructor Dashboard (Recommended)
+
+**NEW FEATURE:** Web-based dashboard for managing student connections!
+
+Instead of manually collecting connection info from each student, use the instructor dashboard:
+
+### Quick Start with Dashboard
+
+**Step 1: Start the Dashboard (Instructor Machine)**
+
+```bash
+cd gemini-auto-installer
+./start-dashboard.sh
+```
+
+The dashboard will start on port 8080 and show your IP address (e.g., `192.168.1.50`)
+
+**Step 2: Students Register Automatically**
+
+When students run `./setup-instructor-access.sh`, they'll be prompted:
+```
+Enter instructor dashboard IP (or press Enter to skip): 192.168.1.50
+```
+
+After entering your IP, they'll automatically appear in your dashboard!
+
+**Step 3: View and Connect**
+
+Open your browser to see all students:
+```
+http://localhost:8080
+```
+
+Features:
+- 🟢 Real-time online/offline status
+- 📋 Click any SSH command to copy to clipboard
+- 🔄 Auto-refresh every 30 seconds
+- 📊 Statistics: Total students, online count, offline count
+- 🗑️ Clear all students button
+
+### Dashboard Screenshots
+
+**Main View:**
+```
+┌─────────────────────────────────────────────────────────┐
+│         🎓 Instructor Dashboard                         │
+│         Monitor and connect to student machines         │
+├─────────────────────────────────────────────────────────┤
+│  Total Students: 15   Online: 12   Offline: 3          │
+├─────────────────────────────────────────────────────────┤
+│ # │ Name      │ IP           │ Status   │ SSH Command  │
+├───┼───────────┼──────────────┼──────────┼──────────────┤
+│ 1 │ John Doe  │ 192.168.1.10 │ 🟢 Online│ ssh john@... │
+│ 2 │ Jane Smith│ 192.168.1.11 │ 🟢 Online│ ssh jane@... │
+│ 3 │ Bob Wilson│ 192.168.1.12 │ 🔴 Offline│ ssh bob@... │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Dashboard Requirements
+
+- Node.js v14+ (automatically installed if you followed main install)
+- Port 8080 available (configurable via `DASHBOARD_PORT=8081 ./start-dashboard.sh`)
+- Same network as students (for automatic registration)
+
+### Troubleshooting Dashboard
+
+**Port already in use:**
+```bash
+DASHBOARD_PORT=8081 ./start-dashboard.sh
+```
+
+**Students can't connect to dashboard:**
+- Check firewall allows port 8080: `sudo ufw allow 8080/tcp`
+- Verify IP address with: `ip addr show`
+- Test from student machine: `curl http://INSTRUCTOR_IP:8080`
+
+**Clear all registered students:**
+- Click "Clear All" button in dashboard
+- Or delete: `~/.instructor-dashboard/students.json`
 
 ---
 

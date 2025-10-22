@@ -1,0 +1,56 @@
+{
+  "description": "Open Codex Policy Configuration - Controls automatic permission handling",
+  "environment": "development",
+  "policies": {
+    "filesystem": {
+      "mode": "prompt",
+      "description": "Control file operations (read, write, delete)",
+      "options": ["allow", "deny", "prompt"]
+    },
+    "subprocess": {
+      "mode": "prompt",
+      "description": "Control command execution",
+      "options": ["allow", "deny", "prompt"]
+    },
+    "network": {
+      "mode": "prompt",
+      "description": "Control network requests",
+      "options": ["allow", "deny", "prompt"]
+    }
+  },
+  "presets": {
+    "development": {
+      "description": "Auto-approve all (fast prototyping)",
+      "filesystem": "allow",
+      "subprocess": "allow",
+      "network": "allow"
+    },
+    "learning": {
+      "description": "Prompt for dangerous operations",
+      "filesystem": "allow",
+      "subprocess": "prompt",
+      "network": "allow"
+    },
+    "production": {
+      "description": "Require approval for everything",
+      "filesystem": "prompt",
+      "subprocess": "prompt",
+      "network": "prompt"
+    },
+    "safe": {
+      "description": "Most restrictive (recommended for beginners)",
+      "filesystem": "prompt",
+      "subprocess": "prompt",
+      "network": "prompt"
+    }
+  },
+  "usage": {
+    "note": "This config is used by codex-smart wrapper script",
+    "examples": [
+      "codex-smart --preset development 'build my app'",
+      "codex-smart --preset learning 'help me debug'",
+      "codex-smart --preset production 'deploy to server'",
+      "codex-smart --preset safe 'teach me Linux commands'"
+    ]
+  }
+}

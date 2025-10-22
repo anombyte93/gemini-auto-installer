@@ -38,6 +38,21 @@ if [[ $EUID -eq 0 ]]; then
    exit 1
 fi
 
+# Prompt for student name
+echo -e "${CYAN}What is your name?${NC}"
+echo "This will help your instructor identify your machine"
+echo ""
+read -p "Enter your name: " STUDENT_NAME
+
+if [ -z "$STUDENT_NAME" ]; then
+    echo -e "${RED}Error: Name cannot be empty${NC}"
+    exit 1
+fi
+
+echo ""
+echo -e "${GREEN}✓ Student name: $STUDENT_NAME${NC}"
+
+echo ""
 echo -e "${CYAN}Choose setup method:${NC}"
 echo ""
 echo "  ${BOLD}1)${NC} Add instructor key to your account (simpler, recommended)"
@@ -437,4 +452,55 @@ EOF
 fi
 
 echo -e "${GREEN}✓ Connection info saved to: $INFO_FILE${NC}"
+echo ""
+
+# Register with instructor dashboard
+echo ""
+echo -e "${CYAN}🎓 Registering with instructor dashboard...${NC}"
+echo ""
+read -p "Enter instructor dashboard IP (or press Enter to skip): " DASHBOARD_IP
+
+if [ ! -z "$DASHBOARD_IP" ]; then
+    # Get primary IP address
+    if command -v ip &> /dev/null; then
+        PRIMARY_IP=$(ip -4 addr show | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | grep -v '127.0.0.1' | head -n 1)
+    elif command -v ifconfig &> /dev/null; then
+        PRIMARY_IP=$(ifconfig | grep -oP '(?<=inet\s)\d+(\.\d+){3}' | grep -v '127.0.0.1' | head -n 1)
+    else
+        PRIMARY_IP="unknown"
+    fi
+
+    # Register with dashboard
+    REGISTRATION_DATA=$(cat <<EOF
+{
+    "name": "$STUDENT_NAME",
+    "ip": "$PRIMARY_IP",
+    "port": "$SSH_PORT",
+    "username": "$TARGET_USER"
+}
+EOF
+)
+
+    if command -v curl &> /dev/null; then
+        RESPONSE=$(curl -s -X POST -H "Content-Type: application/json" \
+            -d "$REGISTRATION_DATA" \
+            "http://$DASHBOARD_IP:8080/api/register" 2>/dev/null)
+
+        if echo "$RESPONSE" | grep -q "success"; then
+            echo -e "${GREEN}✓ Successfully registered with instructor dashboard${NC}"
+            echo "  Your instructor can now see your machine at: http://$DASHBOARD_IP:8080"
+        else
+            echo -e "${YELLOW}⚠️  Could not register with dashboard${NC}"
+            echo "  Dashboard might not be running at $DASHBOARD_IP:8080"
+            echo "  You can manually provide connection info to your instructor"
+        fi
+    else
+        echo -e "${YELLOW}⚠️  curl not installed, skipping dashboard registration${NC}"
+        echo "  Install curl to enable automatic registration: sudo apt-get install curl"
+    fi
+else
+    echo "Skipped dashboard registration"
+    echo "You can manually provide connection info to your instructor"
+fi
+
 echo ""

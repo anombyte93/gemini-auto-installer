@@ -46,6 +46,72 @@ open-codex
 
 This gives you direct access without the student learning prompts.
 
+### ⚡ Auto-Approve Mode (NEW!)
+
+**For fast prototyping without permission prompts:**
+
+Open Codex normally asks for confirmation before executing commands or modifying files. If you want to skip these prompts (useful in safe learning environments), use:
+
+**codex-smart** - Policy-based wrapper with multiple presets:
+
+```bash
+# Development mode - auto-approve everything (fastest)
+codex-smart --preset development "build my app"
+
+# Learning mode - prompt only for dangerous operations (recommended for students)
+codex-smart --preset learning "help me configure Docker"
+
+# Safe mode - prompt for everything (most secure, default)
+codex-smart --preset safe "modify my config files"
+```
+
+**Presets explained:**
+- **development**: Auto-approves all operations. Use in VMs/containers only.
+- **learning**: Auto-approves file operations, prompts for commands. Best for students.
+- **safe/production**: Prompts for everything. Use with important systems.
+
+**Simple auto-approve:**
+```bash
+codex-auto-approve "install Docker and run hello-world"
+```
+
+⚠️ **WARNING**: Auto-approve modes skip ALL permission checks. Only use in safe environments!
+
+**Access from Student Mode:**
+- Launch `student-codex`
+- Choose option **'a'** for Advanced Mode - Auto-Approve
+- Select your preferred preset
+
+---
+
+### 🎓 For Instructors: Student Dashboard (NEW!)
+
+**Web-based dashboard to monitor and connect to student machines:**
+
+Instructors can run a dashboard that shows all registered students with their SSH connection info.
+
+**Quick Start:**
+```bash
+cd gemini-auto-installer
+./start-dashboard.sh
+```
+
+**Features:**
+- 🟢 Real-time online/offline status monitoring
+- 📋 Click-to-copy SSH commands
+- 🔄 Auto-refresh every 30 seconds
+- 📊 Student statistics and last-seen timestamps
+- 🎓 Students register automatically during SSH setup
+
+**How it works:**
+1. Instructor runs `./start-dashboard.sh` on their machine
+2. Dashboard shows instructor's IP address (e.g., `192.168.1.50`)
+3. Students run `./setup-instructor-access.sh` and enter instructor IP when prompted
+4. Students appear automatically in dashboard
+5. Instructor clicks SSH command to copy and connect
+
+**See full guide:** [INSTRUCTOR-GUIDE.md](INSTRUCTOR-GUIDE.md)
+
 ---
 
 ## 🚀 Quick Start for Students
@@ -178,19 +244,23 @@ student-codex
    - Paste your code/config
    - Get educational feedback and improvements
 
-7. **💡 Quick Question** - Fast AI answers
+7. **✏️ Edit/Modify Files** - AI can read and modify files
+   - AI can create, edit, or delete files on your system
+   - Always asks for approval before making changes
+   - Shows you what will change and why
+
+8. **💡 Quick Question** - Fast AI answers
    - One-off questions
    - Quick, focused responses
 
-8. **📖 Documentation & Resources** - Official docs links (non-AI)
-   - Linux guides
-   - Tool documentation
-   - Security resources
-   - Best practices
+9. **📖 Documentation & Resources** - Non-AI documentation links
+   - Direct links to official documentation
+   - Best practices and learning resources
 
-9. **🚀 Advanced Mode** - Bypass student mode
-   - Launch open-codex directly
-   - Full control without student context
+a. **🚀 Advanced Mode - Auto-Approve** - Fast prototyping mode
+   - Choose between development, learning, or safe presets
+   - Development preset auto-approves all operations
+   - Learning preset auto-approves files, prompts for commands
 
 ### How It Works
 

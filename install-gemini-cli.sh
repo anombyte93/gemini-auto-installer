@@ -242,6 +242,21 @@ if [[ "$install_student" =~ ^[Yy]$ ]]; then
         cp "$SCRIPT_DIR/student-codex" "$INSTALL_DIR/student-codex"
         chmod +x "$INSTALL_DIR/student-codex"
 
+        # Also install codex-smart and codex-auto-approve
+        if [[ -f "$SCRIPT_DIR/codex-smart" ]]; then
+            cp "$SCRIPT_DIR/codex-smart" "$INSTALL_DIR/codex-smart"
+            chmod +x "$INSTALL_DIR/codex-smart"
+        fi
+
+        if [[ -f "$SCRIPT_DIR/codex-auto-approve" ]]; then
+            cp "$SCRIPT_DIR/codex-auto-approve" "$INSTALL_DIR/codex-auto-approve"
+            chmod +x "$INSTALL_DIR/codex-auto-approve"
+        fi
+
+        if [[ -f "$SCRIPT_DIR/codex-policy.json" ]]; then
+            cp "$SCRIPT_DIR/codex-policy.json" "$HOME/.codex/policy.json"
+        fi
+
         # Add to PATH if not already there
         if [[ "$INSTALL_DIR" == "$HOME/.local/bin" ]]; then
             if ! grep -q ".local/bin" "$SHELL_CONFIG"; then
@@ -254,6 +269,8 @@ if [[ "$install_student" =~ ^[Yy]$ ]]; then
         fi
 
         echo "✅ Student Mode installed to $INSTALL_DIR/student-codex"
+        echo "✅ Smart Wrapper installed to $INSTALL_DIR/codex-smart"
+        echo "✅ Auto-Approve tool installed to $INSTALL_DIR/codex-auto-approve"
         STUDENT_MODE_INSTALLED=true
     else
         echo "⚠️  student-codex script not found. Skipping."

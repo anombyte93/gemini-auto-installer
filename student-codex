@@ -168,20 +168,23 @@ show_menu() {
     echo "  6) 🔍 Review My Work"
     echo "     Get AI feedback on your code/config"
     echo ""
-    echo "  7) 💡 Quick Question"
+    echo "  7) ✏️  Edit/Modify Files"
+    echo "     AI can read and modify files on your system"
+    echo ""
+    echo "  8) 💡 Quick Question"
     echo "     Fast answer to a specific question"
     echo ""
-    echo "  8) 📖 Documentation & Resources"
+    echo "  9) 📖 Documentation & Resources"
     echo "     Links to official documentation (non-AI)"
     echo ""
-    echo "  9) 🚀 Advanced Mode"
-    echo "     Use Open Codex directly (bypass student mode)"
+    echo "  a) 🚀 Advanced Mode - Auto-Approve"
+    echo "     Use codex-smart with auto-approve (fast, no prompts)"
     echo ""
     echo "  0) 🚪 Exit"
     echo ""
     echo -e "${CYAN}────────────────────────────────────────────────────────${NC}"
     echo ""
-    echo -ne "${YELLOW}Enter your choice [0-9]: ${NC}"
+    echo -ne "${YELLOW}Enter your choice [0-9,a]: ${NC}"
     read choice
 
     case $choice in
@@ -191,9 +194,10 @@ show_menu() {
         4) fix_error ;;
         5) learn_concept ;;
         6) review_work ;;
-        7) quick_question ;;
-        8) show_documentation ;;
-        9) advanced_mode ;;
+        7) edit_files ;;
+        8) quick_question ;;
+        9) show_documentation ;;
+        a|A) advanced_auto_approve ;;
         0) exit 0 ;;
         *)
             echo -e "${RED}Invalid choice. Please try again.${NC}"
@@ -435,7 +439,57 @@ Please provide educational feedback."
     show_menu
 }
 
-# Option 7: Quick Question
+# Option 7: Edit/Modify Files
+edit_files() {
+    clear
+    echo -e "${BOLD}${BLUE}✏️  Edit/Modify Files${NC}\n"
+    echo "AI can read and modify files on your system."
+    echo ""
+    echo -e "${YELLOW}⚠️  WARNING:${NC}"
+    echo "• The AI will be able to make changes to your files"
+    echo "• Always review changes before approving them"
+    echo "• Consider backing up important files first"
+    echo ""
+    echo -e "${CYAN}────────────────────────────────────────────────────────${NC}"
+    echo ""
+    echo -e "${GREEN}What do you want to do with files?${NC}"
+    echo -e "${CYAN}Examples:${NC}"
+    echo "  • Edit /etc/hosts to add a new entry"
+    echo "  • Create a new bash script in ~/scripts"
+    echo "  • Modify config.yaml to change the port"
+    echo "  • Read and explain what's in /var/log/syslog"
+    echo ""
+    read -p "> " file_task
+
+    if [ -z "$file_task" ]; then
+        echo -e "${RED}Please specify what you want to do with files.${NC}"
+        sleep 2
+        edit_files
+        return
+    fi
+
+    prompt="TASK: ${file_task}
+
+REQUIREMENTS:
+1. Before making changes, show me what the current file looks like
+2. Explain exactly what changes you're going to make and WHY
+3. Ask for my approval before modifying any files
+4. After changes, show me what you changed
+5. Explain how to verify the changes worked
+6. If editing config files, remind me to restart the relevant service
+
+IMPORTANT SAFETY NOTES:
+• Always back up important files before modifying them
+• Read the file first to understand its current state
+• Explain each change clearly so I can learn
+
+Please help me with this file operation."
+
+    launch_codex "$prompt"
+    show_menu
+}
+
+# Option 8: Quick Question
 quick_question() {
     clear
     echo -e "${BOLD}${BLUE}💡 Quick Question${NC}\n"
@@ -559,6 +613,93 @@ advanced_mode() {
             echo "Or with a direct prompt:"
             echo ""
             echo "  ${CYAN}open-codex \"Your prompt here\"${NC}"
+            echo ""
+            echo -e "${CYAN}Press Enter to return to menu...${NC}"
+            read
+            show_menu
+            ;;
+        0|*)
+            show_menu
+            ;;
+    esac
+}
+
+# Option A: Advanced Mode with Auto-Approve
+advanced_auto_approve() {
+    clear
+    echo -e "${BOLD}${YELLOW}⚠️  ADVANCED MODE - AUTO-APPROVE ⚠️${NC}\n"
+    echo "This mode uses codex-smart with development preset:"
+    echo ""
+    echo -e "${GREEN}✓ Fastest experience - no permission prompts${NC}"
+    echo -e "${GREEN}✓ AI can execute commands automatically${NC}"
+    echo -e "${GREEN}✓ AI can modify files without asking${NC}"
+    echo ""
+    echo -e "${RED}⚠️  RISKS:${NC}"
+    echo "• AI can make system changes without confirmation"
+    echo "• Files can be modified or deleted automatically"
+    echo "• Commands execute without your review"
+    echo ""
+    echo -e "${CYAN}Recommended for:${NC}"
+    echo "• Quick prototyping and testing"
+    echo "• Isolated development environments"
+    echo "• When you fully trust the AI's actions"
+    echo ""
+    echo -e "${RED}NOT recommended for:${NC}"
+    echo "• Production systems"
+    echo "• Important files or projects"
+    echo "• When you're learning and need to see each step"
+    echo ""
+    echo -e "${CYAN}────────────────────────────────────────────────────────${NC}"
+    echo ""
+    echo -e "${YELLOW}Do you want to continue? (yes/no): ${NC}"
+    read confirm
+
+    if [[ "$confirm" != "yes" ]]; then
+        echo ""
+        echo "Cancelled. Returning to menu..."
+        sleep 1
+        show_menu
+        return
+    fi
+
+    echo ""
+    echo -e "${CYAN}Options:${NC}"
+    echo ""
+    echo "  1) Launch codex-smart --preset development"
+    echo "  2) Launch codex-smart --preset learning (safer)"
+    echo "  3) Show available presets"
+    echo "  0) Back to menu"
+    echo ""
+    read -p "Choice: " smart_choice
+
+    case $smart_choice in
+        1)
+            echo ""
+            echo -e "${GREEN}Launching codex-smart in development mode...${NC}"
+            echo -e "${YELLOW}All actions will be auto-approved!${NC}"
+            echo ""
+            sleep 1
+            codex-smart --preset development
+            echo ""
+            echo -e "${CYAN}Press Enter to return to menu...${NC}"
+            read
+            show_menu
+            ;;
+        2)
+            echo ""
+            echo -e "${GREEN}Launching codex-smart in learning mode...${NC}"
+            echo -e "${CYAN}Will prompt for dangerous operations only${NC}"
+            echo ""
+            sleep 1
+            codex-smart --preset learning
+            echo ""
+            echo -e "${CYAN}Press Enter to return to menu...${NC}"
+            read
+            show_menu
+            ;;
+        3)
+            echo ""
+            codex-smart --help
             echo ""
             echo -e "${CYAN}Press Enter to return to menu...${NC}"
             read

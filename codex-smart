@@ -1,0 +1,190 @@
+#!/bin/bash
+
+# Open Codex Smart Wrapper
+# Policy-based permission handling with presets for different environments
+#
+# Usage:
+#   codex-smart --preset development "your prompt"   # Auto-approve all
+#   codex-smart --preset learning "your prompt"      # Prompt for dangerous ops
+#   codex-smart --preset production "your prompt"    # Prompt for everything
+#   codex-smart --preset safe "your prompt"          # Most restrictive (default)
+#   codex-smart "your prompt"                        # Uses 'safe' preset
+
+set -e
+
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+BLUE='\033[0;34m'
+BOLD='\033[1m'
+NC='\033[0m'
+
+# Get script directory
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+POLICY_FILE="$SCRIPT_DIR/codex-policy.json"
+
+# Check if open-codex is installed
+if ! command -v open-codex &> /dev/null; then
+    echo -e "${RED}Error: open-codex is not installed${NC}"
+    echo "Run the installer first: ./install-gemini-cli.sh"
+    exit 1
+fi
+
+# Check if jq is installed (for JSON parsing)
+if ! command -v jq &> /dev/null; then
+    echo -e "${YELLOW}Warning: jq not installed, using default safe mode${NC}"
+    echo "Install jq for policy support: sudo apt-get install jq"
+    USE_JQ=false
+else
+    USE_JQ=true
+fi
+
+# Default preset
+PRESET="safe"
+
+# Parse arguments
+CODEX_ARGS=()
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --preset)
+            PRESET="$2"
+            shift 2
+            ;;
+        --help|-h)
+            cat <<EOF
+${BOLD}${CYAN}Open Codex Smart Wrapper${NC}
+
+Policy-based permission handling for different environments
+
+${BOLD}Usage:${NC}
+  codex-smart [--preset PRESET] "your prompt"
+
+${BOLD}Presets:${NC}
+  ${GREEN}development${NC}  - Auto-approve all (fastest, for rapid prototyping)
+  ${CYAN}learning${NC}     - Prompt for dangerous operations (recommended for students)
+  ${YELLOW}production${NC}  - Prompt for everything (safest for production)
+  ${BLUE}safe${NC}         - Most restrictive (default, best for beginners)
+
+${BOLD}Examples:${NC}
+  codex-smart --preset development "build a web app"
+  codex-smart --preset learning "help me learn Docker"
+  codex-smart --preset production "deploy my application"
+  codex-smart "teach me Linux commands"  # Uses safe preset
+
+${BOLD}Environment Characteristics:${NC}
+
+  ${GREEN}development${NC} (auto-approve all):
+    ✓ Fast iteration, no interruptions
+    ✓ Good for: prototyping, testing, experimentation
+    ⚠ Risk: AI can execute any command without confirmation
+
+  ${CYAN}learning${NC} (prompt for dangerous operations):
+    ✓ Balance between speed and safety
+    ✓ Good for: students, tutorials, learning environments
+    ⚠ Prompts before: risky commands, system modifications
+
+  ${YELLOW}production${NC} (prompt for everything):
+    ✓ Maximum safety, review every action
+    ✓ Good for: production systems, important projects
+    ⚠ Slower: confirms every file/command operation
+
+  ${BLUE}safe${NC} (most restrictive):
+    ✓ Identical to production mode
+    ✓ Good for: beginners, shared systems, critical data
+    ⚠ Slowest: maximum confirmation
+
+${BOLD}For Students:${NC}
+  Use ${CYAN}learning${NC} preset for best experience:
+    • Allows safe file operations automatically
+    • Prompts before executing commands
+    • Good balance of speed and safety
+
+${BOLD}For Developers:${NC}
+  Use ${GREEN}development${NC} preset in isolated environments:
+    • Maximum velocity, no interruptions
+    • Only use in VMs, containers, or test environments
+    • NOT for production or systems with important data
+
+EOF
+            exit 0
+            ;;
+        *)
+            CODEX_ARGS+=("$1")
+            shift
+            ;;
+    esac
+done
+
+# Display preset information
+case $PRESET in
+    development)
+        echo -e "${BOLD}${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo -e "${BOLD}${GREEN}  🚀 DEVELOPMENT MODE - Auto-Approve Enabled${NC}"
+        echo -e "${BOLD}${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo ""
+        echo -e "${GREEN}✓ File operations: Auto-approved${NC}"
+        echo -e "${GREEN}✓ Command execution: Auto-approved${NC}"
+        echo -e "${GREEN}✓ Network requests: Auto-approved${NC}"
+        echo ""
+        echo -e "${YELLOW}⚠️  Use only in safe development environments!${NC}"
+        echo ""
+        AUTO_APPROVE=true
+        ;;
+    learning)
+        echo -e "${BOLD}${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo -e "${BOLD}${CYAN}  🎓 LEARNING MODE - Smart Prompting${NC}"
+        echo -e "${BOLD}${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo ""
+        echo -e "${GREEN}✓ File operations: Auto-approved${NC}"
+        echo -e "${YELLOW}⚠ Command execution: Will prompt${NC}"
+        echo -e "${GREEN}✓ Network requests: Auto-approved${NC}"
+        echo ""
+        echo -e "${CYAN}Good balance of speed and safety for students${NC}"
+        echo ""
+        AUTO_APPROVE=false
+        ;;
+    production|safe)
+        echo -e "${BOLD}${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo -e "${BOLD}${BLUE}  🔒 SAFE MODE - Manual Approval Required${NC}"
+        echo -e "${BOLD}${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo ""
+        echo -e "${YELLOW}⚠ File operations: Will prompt${NC}"
+        echo -e "${YELLOW}⚠ Command execution: Will prompt${NC}"
+        echo -e "${YELLOW}⚠ Network requests: Will prompt${NC}"
+        echo ""
+        echo -e "${BLUE}Maximum safety - you'll review every action${NC}"
+        echo ""
+        AUTO_APPROVE=false
+        ;;
+    *)
+        echo -e "${RED}Unknown preset: $PRESET${NC}"
+        echo "Valid presets: development, learning, production, safe"
+        echo "Use --help for more information"
+        exit 1
+        ;;
+esac
+
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+# Execute open-codex with appropriate mode
+if [ "$AUTO_APPROVE" = true ]; then
+    # Auto-approve mode: pipe 'yes' to automatically confirm prompts
+    if [ ${#CODEX_ARGS[@]} -eq 0 ]; then
+        yes 'y' | open-codex 2>&1 || true
+    else
+        yes 'y' | open-codex "${CODEX_ARGS[@]}" 2>&1 || true
+    fi
+else
+    # Normal mode: allow interactive prompts
+    if [ ${#CODEX_ARGS[@]} -eq 0 ]; then
+        open-codex
+    else
+        open-codex "${CODEX_ARGS[@]}"
+    fi
+fi
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo -e "${GREEN}Session complete${NC}"

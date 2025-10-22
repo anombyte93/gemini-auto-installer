@@ -1,0 +1,96 @@
+#!/bin/bash
+
+# Open Codex Auto-Approve Wrapper
+# Automatically approves all permission prompts (--dangerously-skip-permissions equivalent)
+#
+# WARNING: This skips ALL permission checks. Only use in safe learning environments!
+# DO NOT use this on production systems or when working with important files.
+#
+# Usage:
+#   codex-auto-approve "your prompt here"
+#   codex-auto-approve --dev "your prompt here"  (same as above)
+#
+# For safe mode (manual approval), just use: open-codex
+
+set -e
+
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
+NC='\033[0m'
+
+# Check if open-codex is installed
+if ! command -v open-codex &> /dev/null; then
+    echo -e "${RED}Error: open-codex is not installed${NC}"
+    echo "Run the installer first: ./install-gemini-cli.sh"
+    exit 1
+fi
+
+# Show warning
+echo -e "${BOLD}${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BOLD}${YELLOW}  ⚠️  AUTO-APPROVE MODE ENABLED ⚠️${NC}"
+echo -e "${BOLD}${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
+echo -e "${YELLOW}This mode automatically approves ALL tool executions without asking.${NC}"
+echo -e "${YELLOW}Only use this in safe learning/development environments!${NC}"
+echo ""
+echo -e "${RED}Risks:${NC}"
+echo "  • AI can execute ANY command without confirmation"
+echo "  • Files can be modified, deleted, or created automatically"
+echo "  • Network requests can be made without approval"
+echo "  • System changes can occur without your review"
+echo ""
+echo -e "${GREEN}Safe for:${NC}"
+echo "  • Learning and experimentation"
+echo "  • Prototyping and rapid development"
+echo "  • Isolated development environments"
+echo "  • Testing in sandboxed containers/VMs"
+echo ""
+echo -e "${RED}NOT safe for:${NC}"
+echo "  • Production systems"
+echo "  • Important files or projects"
+echo "  • Shared or multi-user systems"
+echo "  • Any environment where data loss is unacceptable"
+echo ""
+echo -e "${CYAN}For manual approval mode, use:${NC} open-codex"
+echo ""
+
+# Ask for confirmation (can be skipped with --yes flag)
+if [[ "$1" != "--yes" ]] && [[ "$1" != "-y" ]]; then
+    read -p "Do you understand the risks and want to continue? (yes/no): " confirm
+    if [[ "$confirm" != "yes" ]]; then
+        echo "Cancelled. Use 'open-codex' for normal mode with permission prompts."
+        exit 0
+    fi
+    echo ""
+fi
+
+# Remove --yes/-y flag if present
+if [[ "$1" == "--yes" ]] || [[ "$1" == "-y" ]]; then
+    shift
+fi
+
+# Build the open-codex command with all arguments
+CODEX_ARGS=("$@")
+
+echo -e "${GREEN}Starting auto-approve mode...${NC}"
+echo -e "${CYAN}Prompt: ${CODEX_ARGS[*]}${NC}"
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+# Use 'yes' command to automatically respond 'y' to all prompts
+# The 'yes' command continuously outputs 'y' which will be fed to open-codex
+if [ ${#CODEX_ARGS[@]} -eq 0 ]; then
+    # Interactive mode
+    yes 'y' | open-codex 2>&1 || true
+else
+    # Direct prompt mode
+    yes 'y' | open-codex "${CODEX_ARGS[@]}" 2>&1 || true
+fi
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo -e "${GREEN}Auto-approve session complete${NC}"
