@@ -1,35 +1,275 @@
-# Gemini Auto-Installer
+# Gemini Auto-Installer for Students
 
-AI-powered auto-installer using Google Gemini CLI for automated software installation and configuration.
+**AI-powered auto-installer that installs and configures software through simple prompts.**
 
-## 🚀 Quick Start
+Use Google Gemini AI to automatically install Suricata, Wazuh, Docker, and other tools by just describing what you need.
 
-### 1. Install Gemini CLI
+---
+
+## 📖 For Students: What is This?
+
+This tool installs **Google Gemini CLI** on your Linux system, which acts as your AI installation assistant. Instead of following complex installation guides, you simply tell the AI what you want installed, and it generates the exact commands for you.
+
+**Example:**
+- You say: *"Install Suricata on my Ubuntu system with Wazuh integration"*
+- AI gives you: Ready-to-run installation commands
+- You: Copy, paste, and execute
+- Done!
+
+---
+
+## 🚀 Quick Start for Students
+
+### Step 1: Download the Installer Script
+
+Download this repository to your system:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/gemini-auto-installer/main/install-gemini-cli.sh | bash
-source ~/.bashrc
+# Option A: Download as ZIP (if no git)
+# Go to: https://github.com/anombyte93/gemini-auto-installer
+# Click "Code" → "Download ZIP"
+# Extract and open terminal in that folder
+
+# Option B: Clone with git
+git clone https://github.com/anombyte93/gemini-auto-installer.git
+cd gemini-auto-installer
 ```
 
-**OR clone and run locally:**
+### Step 2: Run the Installation Script
+
+Make the script executable and run it:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/gemini-auto-installer.git
-cd gemini-auto-installer
 chmod +x install-gemini-cli.sh
 ./install-gemini-cli.sh
+```
+
+Wait for it to complete. It will:
+- Install Node.js (required for Gemini CLI)
+- Install Google Gemini CLI globally
+- Configure your API key automatically
+- Test the installation
+
+### Step 3: Activate the Installation
+
+Reload your terminal configuration:
+
+```bash
 source ~/.bashrc
 ```
 
-### 2. Use AI to Install Software
+Or simply close and reopen your terminal.
 
-Simply describe what you want installed:
+### Step 4: Test It Works
+
+Try this command:
+
+```bash
+gemini "Hello, are you working?"
+```
+
+If you get a response from Gemini, you're ready to go!
+
+---
+
+## 🎯 How to Use Gemini CLI as Your Auto-Installer
+
+### Example 1: Install Suricata with Wazuh Integration
+
+This is the main use case for cybersecurity students:
 
 ```bash
 gemini "Install Suricata IDS on this Ubuntu system that has a Wazuh agent already installed. Configure Suricata to log network traffic to /var/log/suricata/ and integrate it with the Wazuh agent by configuring the ossec.conf file to monitor Suricata's eve.json logs. Enable all ET Open rulesets and configure network interface monitoring. Show me the exact commands to run."
 ```
 
-The AI generates installation commands → You copy-paste and execute → Done!
+**What happens:**
+1. Gemini analyzes your request
+2. Generates installation commands for Ubuntu
+3. Provides configuration steps
+4. Shows integration commands for Wazuh
+
+**You then:**
+1. Read the commands to understand what they do
+2. Copy and paste them into your terminal
+3. Execute them one by one (or as a script)
+
+### Example 2: Install Docker
+
+```bash
+gemini "Install Docker on Ubuntu 22.04 and add my current user to the docker group so I can run docker without sudo. Show me the commands."
+```
+
+### Example 3: Configure Suricata Performance
+
+```bash
+gemini "Configure Suricata to use 4 CPU threads and enable all protocol analyzers. Show me what to edit in suricata.yaml"
+```
+
+### Example 4: Troubleshoot Errors
+
+If something goes wrong:
+
+```bash
+gemini "I got this error when starting Suricata: [paste your error here]. How do I fix it?"
+```
+
+---
+
+## 💡 Tips for Getting Good Results
+
+### ✅ DO:
+- **Be specific** - Mention your OS version (Ubuntu 22.04, etc.)
+- **Mention existing software** - "I already have Wazuh agent installed"
+- **Ask for commands** - "Show me the exact commands to run"
+- **Request explanations** - "Explain what each command does"
+
+### ❌ DON'T:
+- Be too vague - "Install security stuff"
+- Forget to mention your environment
+- Skip reading the commands before running them
+
+---
+
+## 🛠️ Common Tasks for Cybersecurity Students
+
+### Task 1: Installing Suricata IDS
+
+**Prompt:**
+```bash
+gemini "Install Suricata IDS on Ubuntu 22.04. Configure it to monitor eth0 interface. Enable EVE JSON logging to /var/log/suricata/eve.json. Download and enable Emerging Threats Open ruleset. Start the service and verify it's running. Give me the complete commands."
+```
+
+### Task 2: Integrating Suricata with Wazuh
+
+**Prompt:**
+```bash
+gemini "I have Suricata installed and logging to /var/log/suricata/eve.json. I have Wazuh agent installed. Configure the Wazuh agent to read Suricata logs and send them to the Wazuh manager. Show me what to add to ossec.conf and how to restart the agent."
+```
+
+### Task 3: Creating Custom Suricata Rules
+
+**Prompt:**
+```bash
+gemini "Create a Suricata rule that detects SSH brute force attempts (more than 5 connections per minute from the same IP). Explain the rule syntax and tell me where to save it."
+```
+
+### Task 4: Verifying Everything Works
+
+**Prompt:**
+```bash
+gemini "How do I verify that Suricata is running, capturing traffic, and that Wazuh is receiving the alerts? Give me the commands to check logs and service status."
+```
+
+---
+
+## 📚 What's in This Repository?
+
+- **`install-gemini-cli.sh`** - The main installation script
+- **`STUDENT-INSTRUCTIONS.md`** - Detailed instructions (this guide)
+- **`README.md`** - Overview and documentation
+- **`PUSH-TO-GITHUB.sh`** - Helper script for publishing (ignore this)
+
+---
+
+## ⚠️ Important Security Notice
+
+**The API key included in this script is PUBLIC and may stop working at any time.**
+
+### Why?
+API keys should be private. This one is shared for educational purposes only.
+
+### What should you do?
+
+**Option 1 (Recommended):** Get your own FREE API key
+
+1. Go to [Google AI Studio](https://aistudio.google.com/app/apikey)
+2. Sign in with your Google account (free)
+3. Click "Create API key"
+4. Copy your new key
+5. Edit `install-gemini-cli.sh` and replace the old key with yours:
+
+```bash
+# Find this line in the script:
+export GOOGLE_API_KEY="AIzaSyAK9EcQBjNIUz2irGXwG10Hr2u201t66wU"
+
+# Replace with your key:
+export GOOGLE_API_KEY="YOUR_NEW_KEY_HERE"
+```
+
+6. Run the script again
+
+**Option 2:** Use the public key until it stops working, then get your own.
+
+---
+
+## 🐛 Troubleshooting
+
+### Problem: "gemini: command not found"
+
+**Solution:**
+```bash
+source ~/.bashrc
+# Or close and reopen your terminal
+```
+
+### Problem: "API key invalid" or "401 Unauthorized"
+
+**Solution:** The public API key was revoked. Get your own key from [Google AI Studio](https://aistudio.google.com/app/apikey) and update the script.
+
+### Problem: "Node.js version too old"
+
+**Solution:**
+```bash
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+node --version  # Should be v20.x or higher
+```
+
+### Problem: Script fails with "Permission denied"
+
+**Solution:**
+```bash
+chmod +x install-gemini-cli.sh
+./install-gemini-cli.sh
+```
+
+### Problem: "sudo: command not found" or password required
+
+**Solution:** Run the script on a system where you have sudo privileges. The script needs to install Node.js system-wide.
+
+---
+
+## 🎓 Learning Objectives
+
+By using this tool, you will learn:
+
+1. **System Administration** - Understanding what commands do before running them
+2. **Security Tool Installation** - Setting up IDS/IPS systems properly
+3. **Integration Skills** - Connecting different security tools (Suricata + Wazuh)
+4. **Troubleshooting** - Using AI to debug issues
+5. **AI-Assisted Development** - Leveraging AI for infrastructure tasks
+
+**Important:** Always read and understand the commands before running them. The AI is a learning assistant, not a replacement for understanding.
+
+---
+
+## 🤝 Need Help?
+
+If you get stuck:
+
+1. **Ask Gemini for help:** `gemini "I'm stuck with [your problem]"`
+2. **Check the logs:** Most errors are in `/var/log/`
+3. **Ask your instructor:** They can help debug specific issues
+
+---
+
+## 📄 License
+
+MIT License - Free for educational and commercial use.
+
+---
+
+**Made for cybersecurity students learning IDS/IPS, SIEM integration, and security automation.**
 
 ---
 
