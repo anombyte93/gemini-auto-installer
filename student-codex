@@ -1,90 +1,494 @@
 #!/bin/bash
 
-# Student Codex - Simplified Launcher for Open Codex with Student Context
-# Version: 2.0
+# Student Codex - AI-Powered Learning Assistant
+# Interactive menu system for students learning system administration
+# Version: 3.0
 
 # Colors
 CYAN='\033[0;36m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+RED='\033[0;31m'
 BOLD='\033[1m'
 NC='\033[0m'
 
-clear
-echo ""
-echo -e "${BOLD}${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BOLD}${CYAN}  Student Codex - AI Learning Assistant${NC}"
-echo -e "${BOLD}${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}\n"
+# Base student context that applies to all AI interactions
+BASE_STUDENT_CONTEXT="STUDENT LEARNING MODE ACTIVE
 
-echo -e "${GREEN}📚 Student Mode Active${NC}"
-echo ""
-echo "This launches Open Codex with special student learning instructions"
-echo "that help the AI provide better educational responses."
-echo ""
-echo -e "${YELLOW}What this does:${NC}"
-echo "  • Tells AI you're a student learning system administration"
-echo "  • Asks AI to explain concepts in simple terms"
-echo "  • Requests step-by-step explanations"
-echo "  • Gets warnings about dangerous commands"
-echo "  • Ensures you understand WHY, not just WHAT"
-echo ""
-echo -e "${CYAN}───────────────────────────────────────────────────────${NC}"
-echo ""
-echo -e "${BOLD}💡 To bypass this and use Open Codex directly:${NC}"
-echo ""
-echo "  Run:  ${GREEN}open-codex${NC}"
-echo ""
-echo "  This gives you full control without student prompts."
-echo ""
-echo -e "${CYAN}───────────────────────────────────────────────────────${NC}"
-echo ""
+I am a student learning system administration and cybersecurity. Please help me by:
+- Explaining concepts in simple, clear language
+- Breaking down complex tasks into steps
+- Explaining WHAT each command does and WHY it's needed
+- Warning me about dangerous commands (sudo, rm, etc.)
+- Providing verification steps to confirm things worked
+- Reminding me to check official documentation when relevant
+- Teaching good security and admin practices
+
+"
 
 # Check if open-codex is installed
-if ! command -v open-codex &> /dev/null; then
-    echo -e "${YELLOW}⚠️  Open Codex not found!${NC}"
+check_codex() {
+    if ! command -v open-codex &> /dev/null; then
+        echo -e "${RED}⚠️  Open Codex not found!${NC}"
+        echo ""
+        echo "Please run the installer first:"
+        echo "  ./install-gemini-cli.sh"
+        echo ""
+        exit 1
+    fi
+}
+
+# Launch open-codex with student context + specific prompt
+launch_codex() {
+    local prompt="$1"
+    local full_prompt="${BASE_STUDENT_CONTEXT}${prompt}"
+
     echo ""
-    echo "Please run the installer first:"
-    echo "  ./install-gemini-cli.sh"
+    echo -e "${GREEN}✓ Launching AI assistant...${NC}"
     echo ""
-    exit 1
-fi
+    sleep 0.5
 
-# Student learning context to always include
-STUDENT_CONTEXT="CONTEXT: I am a student learning system administration and cybersecurity.
+    open-codex "$full_prompt"
 
-LEARNING MODE ACTIVE - Please help me learn by:
-1. Explaining concepts in simple, clear language
-2. Breaking down complex tasks into step-by-step instructions
-3. Explaining WHAT each command does and WHY it's needed
-4. Warning me about potentially dangerous commands (sudo, rm, etc.)
-5. Providing verification steps so I can confirm things worked
-6. Encouraging me to check official documentation
-7. Teaching good security and system administration practices
+    echo ""
+    echo -e "${CYAN}Press Enter to return to menu...${NC}"
+    read
+}
 
-IMPORTANT: Before suggesting any commands, remind me to:
-- Check the official documentation first
-- Understand what each command does
-- Be careful with sudo commands
-- Verify results after running commands
+# Main menu
+show_menu() {
+    clear
+    echo ""
+    echo -e "${BOLD}${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${BOLD}${CYAN}  Student Codex - AI Learning Assistant${NC}"
+    echo -e "${BOLD}${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}\n"
 
-Please proceed with educational, step-by-step guidance."
+    echo -e "${GREEN}🎓 Welcome, Student!${NC}"
+    echo ""
+    echo "AI-powered help for learning system administration."
+    echo "Choose what you need help with:"
+    echo ""
+    echo -e "${CYAN}────────────────────────────────────────────────────────${NC}"
+    echo ""
+    echo "  1) 💬 General AI Help"
+    echo "     Ask anything about system administration"
+    echo ""
+    echo "  2) 🔧 Install Software"
+    echo "     Get help installing packages/applications"
+    echo ""
+    echo "  3) ⚙️  Configure System/Service"
+    echo "     Configure services, settings, or files"
+    echo ""
+    echo "  4) 🐛 Fix Error or Problem"
+    echo "     Troubleshoot errors and issues"
+    echo ""
+    echo "  5) 📚 Learn a Concept"
+    echo "     Understand how something works"
+    echo ""
+    echo "  6) 🔍 Review My Work"
+    echo "     Get AI feedback on your code/config"
+    echo ""
+    echo "  7) 💡 Quick Question"
+    echo "     Fast answer to a specific question"
+    echo ""
+    echo "  8) 📖 Documentation & Resources"
+    echo "     Links to official documentation (non-AI)"
+    echo ""
+    echo "  9) 🚀 Advanced Mode"
+    echo "     Use Open Codex directly (bypass student mode)"
+    echo ""
+    echo "  0) 🚪 Exit"
+    echo ""
+    echo -e "${CYAN}────────────────────────────────────────────────────────${NC}"
+    echo ""
+    echo -ne "${YELLOW}Enter your choice [0-9]: ${NC}"
+    read choice
 
-echo -e "${GREEN}✓ Launching Open Codex with student learning context...${NC}"
-echo ""
-echo -e "${CYAN}Press Enter to continue...${NC}"
-read
+    case $choice in
+        1) general_help ;;
+        2) install_software ;;
+        3) configure_system ;;
+        4) fix_error ;;
+        5) learn_concept ;;
+        6) review_work ;;
+        7) quick_question ;;
+        8) show_documentation ;;
+        9) advanced_mode ;;
+        0) exit 0 ;;
+        *)
+            echo -e "${RED}Invalid choice. Please try again.${NC}"
+            sleep 1
+            show_menu
+            ;;
+    esac
+}
 
-# Launch open-codex with student context
-open-codex "$STUDENT_CONTEXT"
+# Option 1: General AI Help
+general_help() {
+    clear
+    echo -e "${BOLD}${BLUE}💬 General AI Help${NC}\n"
+    echo "Ask the AI anything about system administration, Linux, security, etc."
+    echo ""
+    echo -e "${YELLOW}Examples:${NC}"
+    echo "  • How do I check disk space?"
+    echo "  • What's the difference between apt and apt-get?"
+    echo "  • How do I secure SSH?"
+    echo ""
+    echo -e "${CYAN}────────────────────────────────────────────────────────${NC}"
+    echo ""
+    echo -e "${GREEN}What do you need help with?${NC}"
+    echo -e "${CYAN}(Press Enter to start general conversation)${NC}"
+    echo ""
+    read -p "> " user_input
 
-echo ""
-echo -e "${GREEN}✓ Session complete${NC}"
-echo ""
-echo -e "${YELLOW}Remember:${NC}"
-echo "  • Always check official documentation first"
-echo "  • Verify AI suggestions before running commands"
-echo "  • Ask questions when something isn't clear"
-echo ""
-echo -e "${CYAN}To start another session:  ${GREEN}student-codex${NC}"
-echo -e "${CYAN}To use Open Codex directly: ${GREEN}open-codex${NC}"
-echo ""
+    if [ -z "$user_input" ]; then
+        prompt="I need help with system administration. Please start by asking me what I'm working on or what I need help with."
+    else
+        prompt="I need help with: ${user_input}
+
+Please provide a clear explanation and practical guidance."
+    fi
+
+    launch_codex "$prompt"
+    show_menu
+}
+
+# Option 2: Install Software
+install_software() {
+    clear
+    echo -e "${BOLD}${BLUE}🔧 Install Software${NC}\n"
+    echo "Get AI help installing software with step-by-step guidance."
+    echo ""
+    echo -e "${YELLOW}⚠️  Remember: Check official docs first!${NC}"
+    echo ""
+    echo -e "${CYAN}────────────────────────────────────────────────────────${NC}"
+    echo ""
+    echo -e "${GREEN}What software do you want to install?${NC}"
+    echo -e "${CYAN}Examples: Docker, Suricata, Python 3.11, PostgreSQL${NC}"
+    echo ""
+    read -p "> " software
+
+    if [ -z "$software" ]; then
+        echo -e "${RED}Please specify the software name.${NC}"
+        sleep 2
+        install_software
+        return
+    fi
+
+    echo ""
+    echo -e "${GREEN}What's your operating system?${NC}"
+    echo -e "${CYAN}Examples: Ubuntu 22.04, Debian 11, macOS${NC}"
+    read -p "> " os
+
+    if [ -z "$os" ]; then
+        os="my current OS"
+    fi
+
+    prompt="TASK: Install ${software} on ${os}
+
+REQUIREMENTS:
+1. Check if I should review official documentation first
+2. Explain what ${software} is and why the installation steps are needed
+3. Provide exact commands with explanations
+4. Warn about any sudo/dangerous commands
+5. Include verification steps to confirm installation worked
+
+Please guide me through this installation."
+
+    launch_codex "$prompt"
+    show_menu
+}
+
+# Option 3: Configure System
+configure_system() {
+    clear
+    echo -e "${BOLD}${BLUE}⚙️  Configure System/Service${NC}\n"
+    echo "Get AI help configuring services, settings, or configuration files."
+    echo ""
+    echo -e "${CYAN}────────────────────────────────────────────────────────${NC}"
+    echo ""
+    echo -e "${GREEN}What do you want to configure?${NC}"
+    echo -e "${CYAN}Examples: Suricata to monitor eth0, SSH for key-only auth${NC}"
+    echo ""
+    read -p "> " config_task
+
+    if [ -z "$config_task" ]; then
+        echo -e "${RED}Please specify what you want to configure.${NC}"
+        sleep 2
+        configure_system
+        return
+    fi
+
+    prompt="TASK: Configure ${config_task}
+
+REQUIREMENTS:
+1. Remind me to check official documentation for configuration options
+2. Explain which files need to be edited and why
+3. Show exactly what changes to make
+4. Warn about backing up config files first
+5. Include steps to verify the configuration works
+6. Explain what each setting does
+
+Please guide me through this configuration."
+
+    launch_codex "$prompt"
+    show_menu
+}
+
+# Option 4: Fix Error
+fix_error() {
+    clear
+    echo -e "${BOLD}${BLUE}🐛 Fix Error or Problem${NC}\n"
+    echo "Get AI help troubleshooting errors and problems."
+    echo ""
+    echo -e "${CYAN}────────────────────────────────────────────────────────${NC}"
+    echo ""
+    echo -e "${GREEN}Describe the error or problem:${NC}"
+    echo -e "${CYAN}Include error messages, what you were trying to do, etc.${NC}"
+    echo ""
+    read -p "> " error_desc
+
+    if [ -z "$error_desc" ]; then
+        echo -e "${RED}Please describe the error or problem.${NC}"
+        sleep 2
+        fix_error
+        return
+    fi
+
+    prompt="PROBLEM: ${error_desc}
+
+REQUIREMENTS:
+1. Help me understand what this error means in simple terms
+2. Explain WHY this error happened
+3. Provide step-by-step troubleshooting
+4. Show exact commands to fix it with explanations
+5. Include verification steps to confirm it's fixed
+6. Teach me how to prevent this in the future
+
+Please help me solve this problem."
+
+    launch_codex "$prompt"
+    show_menu
+}
+
+# Option 5: Learn a Concept
+learn_concept() {
+    clear
+    echo -e "${BOLD}${BLUE}📚 Learn a Concept${NC}\n"
+    echo "Get AI explanations of concepts, tools, or technologies."
+    echo ""
+    echo -e "${CYAN}────────────────────────────────────────────────────────${NC}"
+    echo ""
+    echo -e "${GREEN}What do you want to learn about?${NC}"
+    echo -e "${CYAN}Examples: How SSH works, What is systemd, Docker containers${NC}"
+    echo ""
+    read -p "> " concept
+
+    if [ -z "$concept" ]; then
+        echo -e "${RED}Please specify what you want to learn.${NC}"
+        sleep 2
+        learn_concept
+        return
+    fi
+
+    prompt="LEARNING GOAL: Understand ${concept}
+
+REQUIREMENTS:
+1. Explain ${concept} in simple, beginner-friendly terms
+2. Use analogies or examples where helpful
+3. Break down complex parts step-by-step
+4. Include practical examples I can try
+5. Suggest official documentation for deeper learning
+6. Answer common questions beginners have about this
+
+Please teach me about this concept."
+
+    launch_codex "$prompt"
+    show_menu
+}
+
+# Option 6: Review Work
+review_work() {
+    clear
+    echo -e "${BOLD}${BLUE}🔍 Review My Work${NC}\n"
+    echo "Get AI feedback on your code, configuration, or commands."
+    echo ""
+    echo -e "${CYAN}────────────────────────────────────────────────────────${NC}"
+    echo ""
+    echo -e "${GREEN}What do you want reviewed?${NC}"
+    echo -e "${CYAN}Paste your code/config, or describe what you did${NC}"
+    echo -e "${CYAN}(Type 'END' on a new line when finished, or just describe it)${NC}"
+    echo ""
+
+    work_content=""
+    while IFS= read -r line; do
+        if [[ "$line" == "END" ]]; then
+            break
+        fi
+        work_content="${work_content}${line}"$'\n'
+    done
+
+    if [ -z "$work_content" ]; then
+        echo -e "${RED}Please provide something to review.${NC}"
+        sleep 2
+        review_work
+        return
+    fi
+
+    prompt="REVIEW REQUEST: Please review the following work from a student learning perspective
+
+${work_content}
+
+REQUIREMENTS:
+1. Check for correctness and best practices
+2. Explain what's done well
+3. Point out any issues or improvements needed
+4. Explain WHY changes are recommended
+5. Teach me better approaches or patterns
+6. Highlight any security concerns
+
+Please provide educational feedback."
+
+    launch_codex "$prompt"
+    show_menu
+}
+
+# Option 7: Quick Question
+quick_question() {
+    clear
+    echo -e "${BOLD}${BLUE}💡 Quick Question${NC}\n"
+    echo "Get a fast answer to a specific question."
+    echo ""
+    echo -e "${CYAN}────────────────────────────────────────────────────────${NC}"
+    echo ""
+    echo -e "${GREEN}What's your question?${NC}"
+    echo ""
+    read -p "> " question
+
+    if [ -z "$question" ]; then
+        echo -e "${RED}Please ask a question.${NC}"
+        sleep 2
+        quick_question
+        return
+    fi
+
+    prompt="QUESTION: ${question}
+
+Please provide a clear, concise answer with:
+1. Direct answer to the question
+2. Brief explanation of why
+3. Example if applicable
+4. Any important warnings or caveats"
+
+    launch_codex "$prompt"
+    show_menu
+}
+
+# Option 8: Documentation & Resources (NON-AI)
+show_documentation() {
+    clear
+    echo -e "${BOLD}${BLUE}📖 Documentation & Resources${NC}\n"
+    echo "Official documentation and learning resources (non-AI)"
+    echo ""
+    echo -e "${CYAN}────────────────────────────────────────────────────────${NC}"
+    echo ""
+    echo -e "${YELLOW}📚 Linux & System Administration:${NC}"
+    echo ""
+    echo "  Linux Command Line Basics:"
+    echo "  https://ubuntu.com/tutorials/command-line-for-beginners"
+    echo ""
+    echo "  Ubuntu Server Guide:"
+    echo "  https://ubuntu.com/server/docs"
+    echo ""
+    echo "  Debian Administrator's Handbook:"
+    echo "  https://debian-handbook.info/"
+    echo ""
+    echo -e "${YELLOW}🔧 Common Tools:${NC}"
+    echo ""
+    echo "  Docker Documentation:"
+    echo "  https://docs.docker.com/"
+    echo ""
+    echo "  Suricata User Guide:"
+    echo "  https://suricata.readthedocs.io/"
+    echo ""
+    echo "  Wazuh Documentation:"
+    echo "  https://documentation.wazuh.com/"
+    echo ""
+    echo -e "${YELLOW}🔒 Security:${NC}"
+    echo ""
+    echo "  OpenSSH Manual:"
+    echo "  https://www.openssh.com/manual.html"
+    echo ""
+    echo "  OWASP Security Resources:"
+    echo "  https://owasp.org/"
+    echo ""
+    echo -e "${YELLOW}💡 Best Practices:${NC}"
+    echo ""
+    echo "  • Always check official docs BEFORE using AI"
+    echo "  • Verify AI suggestions against documentation"
+    echo "  • Test in safe environments first"
+    echo "  • Keep notes of what works"
+    echo "  • Ask instructors when unsure"
+    echo ""
+    echo -e "${CYAN}────────────────────────────────────────────────────────${NC}"
+    echo ""
+    echo -e "${CYAN}Press Enter to return to menu...${NC}"
+    read
+    show_menu
+}
+
+# Option 9: Advanced Mode
+advanced_mode() {
+    clear
+    echo -e "${BOLD}${BLUE}🚀 Advanced Mode${NC}\n"
+    echo "Launch Open Codex directly without student learning context."
+    echo ""
+    echo -e "${YELLOW}Note:${NC} You'll have full control but won't get educational"
+    echo "      prompts or beginner-friendly explanations."
+    echo ""
+    echo -e "${CYAN}────────────────────────────────────────────────────────${NC}"
+    echo ""
+    echo -e "${GREEN}Options:${NC}"
+    echo ""
+    echo "  1) Launch Open Codex now"
+    echo "  2) Show command to run it manually"
+    echo "  0) Back to menu"
+    echo ""
+    read -p "Choice: " adv_choice
+
+    case $adv_choice in
+        1)
+            echo ""
+            echo -e "${GREEN}Launching Open Codex in advanced mode...${NC}"
+            echo ""
+            sleep 0.5
+            open-codex
+            echo ""
+            echo -e "${CYAN}Press Enter to return to menu...${NC}"
+            read
+            show_menu
+            ;;
+        2)
+            echo ""
+            echo -e "${GREEN}To use Open Codex directly:${NC}"
+            echo ""
+            echo "  ${CYAN}open-codex${NC}"
+            echo ""
+            echo "Or with a direct prompt:"
+            echo ""
+            echo "  ${CYAN}open-codex \"Your prompt here\"${NC}"
+            echo ""
+            echo -e "${CYAN}Press Enter to return to menu...${NC}"
+            read
+            show_menu
+            ;;
+        0|*)
+            show_menu
+            ;;
+    esac
+}
+
+# Main execution
+check_codex
+show_menu

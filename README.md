@@ -146,65 +146,84 @@ If you get a response from Gemini, you're ready to go!
 
 ## 🎓 Using Student Mode
 
-**Simple:** Just run `student-codex` instead of `open-codex`
+**Interactive AI-powered menu for students**
 
 ```bash
 student-codex
 ```
 
-This launches Open Codex with built-in student learning instructions that tell the AI:
-- You're a student learning system administration
-- Use simple, clear language
-- Explain WHY, not just WHAT
-- Warn about dangerous commands
-- Remind to check official documentation
-- Provide verification steps
+### Main Menu Options:
 
-**Example Session:**
-```bash
-$ student-codex
+1. **💬 General AI Help** - Ask anything about system administration
+   - Press Enter to start open conversation with AI
+   - Or type your question immediately
 
-Student Codex - AI Learning Assistant
+2. **🔧 Install Software** - AI guides you through installations
+   - Asks what software and your OS
+   - Provides step-by-step commands with explanations
 
-📚 Student Mode Active
+3. **⚙️ Configure System/Service** - AI helps with configuration
+   - Explains which files to edit and why
+   - Shows exact changes needed
 
-This launches Open Codex with special student learning instructions
-that help the AI provide better educational responses.
+4. **🐛 Fix Error or Problem** - AI troubleshoots issues
+   - Describe your error
+   - AI explains why it happened and how to fix
 
-What this does:
-  • Tells AI you're a student learning system administration
-  • Asks AI to explain concepts in simple terms
-  • Requests step-by-step explanations
-  • Gets warnings about dangerous commands
-  • Ensures you understand WHY, not just WHAT
+5. **📚 Learn a Concept** - AI teaches you concepts
+   - Ask about any technology or concept
+   - Get beginner-friendly explanations
 
-───────────────────────────────────────────────────────
+6. **🔍 Review My Work** - AI provides feedback
+   - Paste your code/config
+   - Get educational feedback and improvements
 
-💡 To bypass this and use Open Codex directly:
+7. **💡 Quick Question** - Fast AI answers
+   - One-off questions
+   - Quick, focused responses
 
-  Run:  open-codex
+8. **📖 Documentation & Resources** - Official docs links (non-AI)
+   - Linux guides
+   - Tool documentation
+   - Security resources
+   - Best practices
 
-  This gives you full control without student prompts.
+9. **🚀 Advanced Mode** - Bypass student mode
+   - Launch open-codex directly
+   - Full control without student context
 
-───────────────────────────────────────────────────────
+### How It Works
 
-✓ Launching Open Codex with student learning context...
+Each option automatically includes student learning context:
+- "I am a student learning system administration"
+- "Explain in simple terms"
+- "Warn about dangerous commands"
+- "Provide verification steps"
+- "Remind to check official documentation"
 
-[Open Codex starts with student context pre-loaded]
+**Example: Install Docker**
+```
+Choice: 2 (Install Software)
+Software: docker
+OS: Ubuntu 22.04
+
+→ Launches AI with:
+  "STUDENT MODE: Install docker on Ubuntu 22.04
+   Please explain what Docker is, provide commands with
+   explanations, warn about sudo, include verification..."
 ```
 
 ### Benefits
 
-**For students who feel lost:**
-- ✅ AI automatically knows you're learning
-- ✅ Explanations are simpler and more detailed
-- ✅ Safety warnings included by default
-- ✅ Documentation reminders built-in
-- ✅ No complex menus to navigate
+**AI-powered workflow:**
+- ✅ Context-aware prompts for each task type
+- ✅ Automatic educational scaffolding
+- ✅ Simple menu navigation
+- ✅ Returns to menu after each session
 
-**Advanced users can bypass:**
+**Advanced bypass:**
 ```bash
-open-codex  # Direct access without student prompts
+open-codex  # Direct access without menus
 ```
 
 ---

@@ -85,11 +85,47 @@ if [ "$NEED_UPGRADE" = true ]; then
 fi
 
 echo ""
-echo "[2/5] Installing Open Codex CLI globally..."
-npm install -g open-codex
+echo "[2/5] Checking Open Codex CLI installation..."
+
+# Check if open-codex is already installed
+if command -v open-codex &> /dev/null; then
+    echo "✅ Open Codex CLI already installed"
+    CODEX_VERSION=$(open-codex --version 2>/dev/null || echo "unknown")
+    echo "   Version: $CODEX_VERSION"
+    echo ""
+    read -p "Reinstall/update Open Codex? (y/n): " reinstall_codex
+    if [[ "$reinstall_codex" =~ ^[Yy]$ ]]; then
+        echo "Updating Open Codex CLI..."
+        npm install -g open-codex
+    else
+        echo "Skipping Open Codex installation."
+    fi
+else
+    echo "Installing Open Codex CLI globally..."
+    npm install -g open-codex
+fi
 
 echo ""
 echo "[3/5] Setting up Gemini API key..."
+
+# Check if API key is already configured
+if [ ! -z "$GOOGLE_GENERATIVE_AI_API_KEY" ]; then
+    echo "✅ API key already configured in environment"
+    echo "   Key: ${GOOGLE_GENERATIVE_AI_API_KEY:0:20}..."
+    echo ""
+    read -p "Replace with a new API key? (y/n): " replace_key
+    if [[ ! "$replace_key" =~ ^[Yy]$ ]]; then
+        echo "Keeping existing API key."
+        GOOGLE_API_KEY="$GOOGLE_GENERATIVE_AI_API_KEY"
+        SKIP_KEY_SETUP=true
+    else
+        SKIP_KEY_SETUP=false
+    fi
+else
+    SKIP_KEY_SETUP=false
+fi
+
+if [ "$SKIP_KEY_SETUP" = false ]; then
 echo ""
 echo "You need a Google Gemini API key to use this tool."
 echo "Get one FREE at: https://aistudio.google.com/app/apikey"
@@ -110,35 +146,36 @@ if [[ ! "$GOOGLE_API_KEY" =~ ^AIza ]]; then
     fi
 fi
 
-# Detect shell config file
-if [[ "$OS" == "macos" ]]; then
-    # macOS typically uses zsh
-    if [[ -f ~/.zshrc ]]; then
-        SHELL_CONFIG="$HOME/.zshrc"
-    elif [[ -f ~/.bash_profile ]]; then
-        SHELL_CONFIG="$HOME/.bash_profile"
-    else
-        SHELL_CONFIG="$HOME/.zshrc"
-        touch "$SHELL_CONFIG"
-    fi
-else
-    # Linux typically uses bash
-    SHELL_CONFIG="$HOME/.bashrc"
-fi
-
-# Add to shell config for persistence
-if grep -q "GOOGLE_GENERATIVE_AI_API_KEY" "$SHELL_CONFIG"; then
-    # Remove old key (different sed syntax for macOS vs Linux)
+    # Detect shell config file
     if [[ "$OS" == "macos" ]]; then
-        sed -i '' '/GOOGLE_GENERATIVE_AI_API_KEY/d' "$SHELL_CONFIG"
+        # macOS typically uses zsh
+        if [[ -f ~/.zshrc ]]; then
+            SHELL_CONFIG="$HOME/.zshrc"
+        elif [[ -f ~/.bash_profile ]]; then
+            SHELL_CONFIG="$HOME/.bash_profile"
+        else
+            SHELL_CONFIG="$HOME/.zshrc"
+            touch "$SHELL_CONFIG"
+        fi
     else
-        sed -i '/GOOGLE_GENERATIVE_AI_API_KEY/d' "$SHELL_CONFIG"
+        # Linux typically uses bash
+        SHELL_CONFIG="$HOME/.bashrc"
     fi
-fi
-echo "export GOOGLE_GENERATIVE_AI_API_KEY=\"$GOOGLE_API_KEY\"" >> "$SHELL_CONFIG"
 
-# Export for current session
-export GOOGLE_GENERATIVE_AI_API_KEY="$GOOGLE_API_KEY"
+    # Add to shell config for persistence
+    if grep -q "GOOGLE_GENERATIVE_AI_API_KEY" "$SHELL_CONFIG"; then
+        # Remove old key (different sed syntax for macOS vs Linux)
+        if [[ "$OS" == "macos" ]]; then
+            sed -i '' '/GOOGLE_GENERATIVE_AI_API_KEY/d' "$SHELL_CONFIG"
+        else
+            sed -i '/GOOGLE_GENERATIVE_AI_API_KEY/d' "$SHELL_CONFIG"
+        fi
+    fi
+    echo "export GOOGLE_GENERATIVE_AI_API_KEY=\"$GOOGLE_API_KEY\"" >> "$SHELL_CONFIG"
+
+    # Export for current session
+    export GOOGLE_GENERATIVE_AI_API_KEY="$GOOGLE_API_KEY"
+fi  # End of SKIP_KEY_SETUP check
 
 echo ""
 echo "[4/5] Creating Open Codex configuration..."
