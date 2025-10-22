@@ -26,20 +26,44 @@ echo "[2/4] Installing Gemini CLI globally..."
 npm install -g @google/generative-ai-cli
 
 echo "[3/4] Setting up API key..."
-export GOOGLE_API_KEY="AIzaSyAK9EcQBjNIUz2irGXwG10Hr2u201t66wU"
+echo ""
+echo "You need a Google Gemini API key to use this tool."
+echo "Get one FREE at: https://aistudio.google.com/app/apikey"
+echo ""
+read -p "Enter your Google Gemini API key: " GOOGLE_API_KEY
 
-# Add to bashrc for persistence
-if ! grep -q "GOOGLE_API_KEY" ~/.bashrc; then
-    echo 'export GOOGLE_API_KEY="AIzaSyAK9EcQBjNIUz2irGXwG10Hr2u201t66wU"' >> ~/.bashrc
+if [ -z "$GOOGLE_API_KEY" ]; then
+    echo "❌ Error: API key cannot be empty"
+    exit 1
 fi
 
+# Validate API key format (basic check)
+if [[ ! "$GOOGLE_API_KEY" =~ ^AIza ]]; then
+    echo "⚠️  Warning: API key doesn't look valid (should start with 'AIza')"
+    read -p "Continue anyway? (y/n): " confirm
+    if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+        exit 1
+    fi
+fi
+
+# Add to bashrc for persistence
+if grep -q "GOOGLE_API_KEY" ~/.bashrc; then
+    # Remove old key
+    sed -i '/GOOGLE_API_KEY/d' ~/.bashrc
+fi
+echo "export GOOGLE_API_KEY=\"$GOOGLE_API_KEY\"" >> ~/.bashrc
+
+# Export for current session
+export GOOGLE_API_KEY="$GOOGLE_API_KEY"
+
+echo ""
 echo "[4/4] Testing installation..."
 gemini --version
 
 echo ""
 echo "✅ Installation complete!"
 echo ""
-echo "⚠️  WARNING: This API key is publicly exposed and may be revoked."
-echo "    Generate your own at: https://aistudio.google.com/app/apikey"
+echo "🔑 Your API key has been saved to ~/.bashrc"
+echo "🔒 Keep your API key private - don't share it or commit it to git"
 echo ""
 echo "Now restart your terminal or run: source ~/.bashrc"

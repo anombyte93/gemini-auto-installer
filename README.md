@@ -35,7 +35,17 @@ git clone https://github.com/anombyte93/gemini-auto-installer.git
 cd gemini-auto-installer
 ```
 
-### Step 2: Run the Installation Script
+### Step 2: Get Your FREE Google Gemini API Key
+
+Before running the installer, get your API key:
+
+1. Go to: https://aistudio.google.com/app/apikey
+2. Sign in with your Google account (it's free!)
+3. Click **"Create API key"**
+4. Copy the key (starts with "AIza...")
+5. Keep it ready - you'll need it in the next step
+
+### Step 3: Run the Installation Script
 
 Make the script executable and run it:
 
@@ -44,13 +54,14 @@ chmod +x install-gemini-cli.sh
 ./install-gemini-cli.sh
 ```
 
-Wait for it to complete. It will:
+The script will:
 - Install Node.js (required for Gemini CLI)
 - Install Google Gemini CLI globally
-- Configure your API key automatically
+- **Prompt you for your API key** - paste it when asked
+- Save your API key securely to ~/.bashrc
 - Test the installation
 
-### Step 3: Activate the Installation
+### Step 4: Activate the Installation
 
 Reload your terminal configuration:
 
@@ -60,7 +71,7 @@ source ~/.bashrc
 
 Or simply close and reopen your terminal.
 
-### Step 4: Test It Works
+### Step 5: Test It Works
 
 Try this command:
 
@@ -173,32 +184,33 @@ gemini "How do I verify that Suricata is running, capturing traffic, and that Wa
 
 ## ⚠️ Important Security Notice
 
-**The API key included in this script is PUBLIC and may stop working at any time.**
+**Keep your API key private!**
 
-### Why?
-API keys should be private. This one is shared for educational purposes only.
+### Security Best Practices:
 
-### What should you do?
+- ✅ **DO** use your own API key (get it free from Google AI Studio)
+- ✅ **DO** keep your API key private and secure
+- ✅ **DO** use the installer script which saves your key to ~/.bashrc (not visible in git)
+- ❌ **DON'T** share your API key with anyone
+- ❌ **DON'T** commit your API key to git repositories
+- ❌ **DON'T** post your API key in screenshots or chat
 
-**Option 1 (Recommended):** Get your own FREE API key
+### If Your API Key is Compromised:
 
 1. Go to [Google AI Studio](https://aistudio.google.com/app/apikey)
-2. Sign in with your Google account (free)
-3. Click "Create API key"
-4. Copy your new key
-5. Edit `install-gemini-cli.sh` and replace the old key with yours:
+2. Delete the compromised key
+3. Create a new API key
+4. Update your ~/.bashrc with the new key:
+   ```bash
+   # Edit the file
+   nano ~/.bashrc
 
-```bash
-# Find this line in the script:
-export GOOGLE_API_KEY="AIzaSyAK9EcQBjNIUz2irGXwG10Hr2u201t66wU"
+   # Find and replace the GOOGLE_API_KEY line
+   export GOOGLE_API_KEY="YOUR_NEW_KEY_HERE"
 
-# Replace with your key:
-export GOOGLE_API_KEY="YOUR_NEW_KEY_HERE"
-```
-
-6. Run the script again
-
-**Option 2:** Use the public key until it stops working, then get your own.
+   # Save and reload
+   source ~/.bashrc
+   ```
 
 ---
 
